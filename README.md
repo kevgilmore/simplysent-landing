@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with Create React App [![CI](https://github.com/kevgilmore/simplysent-landing/actions/workflows/deploy_to_s3.yml/badge.svg)](https://github.com/kevgilmore/simplysent-landing/actions/workflows/deploy_to_s3.yml)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
