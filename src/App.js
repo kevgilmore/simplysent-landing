@@ -1,17 +1,42 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 import './App.css';
-import Navbar from './Navbar.js';
+import Navbar from './components/Navbar.js';
+
+import heroImg from './img/hero2.jpg';
+import plotter from './img/plotter.jpg';
+import xmasCard from './img/xmasCard.jpg';
 
 function App() {
   return (
     <div className="App">
-      <Navbar></Navbar>
-      <section className="bg-[#F4FDFF] md:pb-24">
-        <div className="w-4/5 mx-auto ">
+      {/* <Navbar></Navbar> */}
+
+
+      <div class="wave">
+    <svg width="100%" height="200px" fill="none" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+      <path 
+        fill="white" 
+        d="
+          M0 67
+          C 273,183
+            822,-41
+            1920.01,106 
+          V 359 
+          H 0 
+          V 67
+          Z">
+      </path>
+    </svg>
+  </div>
+  <div id="container">
+    <div id="tsparticles">
+      <section className="md:pb-24">
+        <div className="w-4/5 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
             <div className="pt-8 md:pt-16 mt-4 md:mt-12 3xl:mt-36 lg:w-4/5 text-center lg:text-left">
-              <span className="badgePastelGradient rounded-2xl text-[#6A65FF] uppercase text-sm font-medium px-4 py-2">
+              <span className="rounded-2xl text-[#6A65FF] uppercase text-sm font-medium px-4 py-2">
                 Our Goal Is Simple
               </span>
               <h1 className="font-bold text-[#0E004A] md:text-5xl text-4xl md:leading-[130%]   pt-1 mt-2">
@@ -39,6 +64,55 @@ function App() {
         </div>
       </section>
     </div>
+  </div>
+
+
+
+
+      <section className="text-center md:text-left">
+        <div className="mt-24 mx-auto w-4/5 mx-auto mb-24">
+          <div className=" lg:grid lg:gap-8 lg:grid-cols-2">
+            <div className=" pb-12 mt-16">
+              <h1 className="md:w-4/5 text-4xl leading-tight tracking-tight mb-4 font-bold text-gray-900">
+                Schedule your social media content
+              </h1>
+              <p className="mb-8 leading-relaxed mt-4 text-gray-600 text-base md:w-5/6 inter font-inter">
+                Repurpose your marketing content for social media with our intuitive tool. Convert your YouTube videos to short, shareable clips, ready for those viral moments.
+              </p>
+            </div>
+            <div className="md:pl-16 mx-auto">
+              <img
+                alt="hero"
+                className="object-cover object-center rounded-3xl w-full h-full"
+                src={xmasCard}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-24 mx-auto w-4/5 mx-auto mb-24">
+          <div className=" lg:grid lg:gap-8 lg:grid-cols-2">
+            <div className=" mx-auto">
+              <img
+                alt="hero"
+                className="object-cover object-center rounded-3xl w-full h-full"
+
+                src={plotter}
+              />
+            </div>
+            <div className=" pb-12 md:pl-16 mt-16">
+              <h1 className="md:w-3/5 text-4xl leading-tight tracking-tight mb-4 font-bold text-gray-900">
+                Create tasks and to-do lists
+              </h1>
+              <p className="mb-8 leading-relaxed mt-4 text-gray-600 text-base md:w-[85%]">
+                Repurpose your marketing content for social media with our intuitive tool. Convert your YouTube videos to short, shareable clips, ready for those viral moments.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+    </div> // end of App
   );
 }
 
