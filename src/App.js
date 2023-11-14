@@ -5,7 +5,7 @@ import CTA from './components/CTA.js';
 import Features1 from './components/Features1.js';
 import Features2 from './components/Features2.js';
 import Footer from './components/Footer.js';
-import Hero2 from './components/Hero2.js';
+import Hero from './components/Hero.js';
 import Navbar from './components/Navbar.js';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
 
       <Navbar />
 
-      <Hero2 />
+      <Hero />
 
       <Features1 />
 
