@@ -10,18 +10,7 @@ const CTA = () => {
         Sign up in just thirty seconds, and you'll have your calendars ready to go and set up.
       </p>
       <div className="pt-8 flex flex-col md:flex-row space-y-2 md:space-y-0 justify-center">
-        <button
-          className="text-white transition bg-slate-900 hover:bg-slate-800 focus:ring-4  focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-4 md:mr-2 focus:outline-none"
-          type="button"
-        >
-          Get Started
-        </button>
-        <button
-          className="text-slate-800 bg-gray-100 hover:bg-gray-200  focus:ring-4 focus:ring-blue-300 font-regular rounded-lg text-sm px-8 py-4 md:mr-2 focus:outline-none"
-          type="button"
-        >
-          More Info
-        </button>
+        <div data-tf-live="01HF7K4E0F2YN6BSXTPBNGYVRA"></div>
       </div>
     </div>
   </div>
