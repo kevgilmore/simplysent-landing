@@ -2,8 +2,10 @@
 
 import './App.css';
 import CTA from './components/CTA.js';
-import Features1 from './components/Features1.js';
-import Features2 from './components/Features2.js';
+import Details from './components/Details.js';
+import FAQ from './components/FAQ.js';
+import Benefits from './components/Benefits.js';
+import Features from './components/Features.js';
 import Footer from './components/Footer.js';
 import Hero from './components/Hero.js';
 import Navbar from './components/Navbar.js';
@@ -16,11 +18,15 @@ function App() {
 
       <Hero />
 
-      <Features1 />
+      <Benefits />
 
-      <Features2 />
+      <Features />
+
+      {/* <Details /> */}
 
       <CTA />
+
+      <FAQ />
 
       <Footer />
 
