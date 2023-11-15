@@ -1,7 +1,7 @@
 const CTA = () => {
     return (
 <div className="pt-12 pb-12">
-  <div className="rounded-2xl py-16 md:py-0 md:h-96 flex justify-center align-center shadow-lg bg-white w-5/6 mx-auto  bg-gradient-to-r via-sky-600 to-cyan-600 from-purple-600">
+  <div className="rounded-2xl py-16 md:py-0 md:h-96 flex justify-center align-center shadow-lg bg-white w-5/6 mx-auto  bg-gradient-to-r via-[#2e0553] to-cyan-600 from-purple-600">
     <div className="text-center text-white w-4/5 m-auto pt-12 md:pt-0">
       <h1 className="text-3xl md:text-4xl font-bold">
       No reminders needed, we deliver each year, every year.

@@ -1,3 +1,6 @@
+import mday from '../img/mday.jpg'
+import fday from '../img/fday.jpg'
+
 const Features1 = () => {
     return (
 <section className="mt-12 pt-16 md:mb-32 w-4/5 mx-auto">
@@ -30,7 +33,7 @@ const Features1 = () => {
               <div className="bg-white shadow rounded md:rounded-2xl m-auto ">
                 <img
                   className="rounded-xl px-2 py-2 object-cover h-full w-full"
-                  src="https://res.cloudinary.com/dnzjbmzag/image/upload/v1695363936/CardExample1.png"
+                  src={fday}
                 />
               </div>
             </div>
@@ -47,7 +50,7 @@ const Features1 = () => {
               <div className="bg-white shadow rounded md:rounded-2xl m-auto ">
                 <img
                   className="rounded-xl px-2 py-2 object-cover h-full w-full"
-                  src="https://res.cloudinary.com/dnzjbmzag/image/upload/v1695363936/CardExample1.png"
+                  src={mday}
                 />
               </div>
             </div>
