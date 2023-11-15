@@ -4,13 +4,17 @@ const Features1 = () => {
   <div className="text-center ">
     <div className="md:w-3/5 lg:w-4/5 md:mx-auto">
       <span className="badgePastelGradient uppercase rounded-2xl text-[#6A65FF]  text-sm font-normal px-5 py-2">
-        Features
+        Our Cards
       </span>
       <h2 className="text-4xl text-[#0E004A] font-bold lg:text-5xl pt-3 mt-2">
-        Our Cool Features
+        Beyond Ordinary Cards
       </h2>
       <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
-        Streamline your workflow with the all-in-one calendar and organization app for founders. Get started with a free trial today, no credit card needed.
+      Quality greetings cards combine exquisite materials and elegant designs to create a card that is as unique and special as the person you send it to.
+      </p>
+
+      <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
+      A5 cards that measures 148 x 210 mm or 5.8 x 8.3 inches
       </p>
     </div>
     <div className=" mx-auto pt-6 md:px-8">
@@ -19,11 +23,8 @@ const Features1 = () => {
           <div className="grid md:grid-cols-10 py-12 px-6 justify-center ">
             <div className="px-2 md:px-8 text-left md:col-span-6  mt-4 md:mt-16 lg:mt-12 3xl:mt-20">
               <h2 className="font-bold text-[#0E004A] font-gray-900  text-2xl">
-                Create tasks and notes with ease
+                Father's Day Cards
               </h2>
-              <p className="text-sm xl:text-base text-[#453878] pt-3">
-                With our calendar app, you can quickly create notes and tasks to help you plan and organize your tasks and projects.
-              </p>
             </div>
             <div className="md:col-span-4 h-full mt-12 px-2 md:px-8 lg:px-0 lg:mt-0">
               <div className="bg-white shadow rounded md:rounded-2xl m-auto ">
@@ -39,11 +40,8 @@ const Features1 = () => {
           <div className="grid md:grid-cols-10 py-12 px-6 justify-center ">
             <div className="px-2 md:px-8 text-left md:col-span-6  mt-4 md:mt-16 lg:mt-12 3xl:mt-20">
               <h2 className="font-bold text-[#0E004A] font-gray-900  text-2xl">
-                Streamline your workflow
+                Mother's Day Cards
               </h2>
-              <p className="text-sm xl:text-base text-[#453878] pt-3">
-                We also have lots of integrations with popular apps, so that you can organize and streamline your workflow.
-              </p>
             </div>
             <div className="md:col-span-4 h-full mt-12 px-2 md:px-8 lg:px-0 lg:mt-0">
               <div className="bg-white shadow rounded md:rounded-2xl m-auto ">

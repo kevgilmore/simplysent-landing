@@ -1,3 +1,6 @@
+import familyCard from '../img/family-card.png'
+import plotter from '../img/plotter2.png'
+
 const Features1 = () => {
     return (
         
@@ -7,18 +10,10 @@ const Features1 = () => {
     <div className="container mx-auto flex px-5 py-10 md:py-24 md:flex-row flex-col items-center">
       <div className="mb-8 md:mb-0 md:w-1/2 flex flex-col md:items-start md:text-left  items-center text-center ">
         <h1 className="md:w-5/6 sm:text-4xl text-4xl mb-6 font-semibold text-[#030647]">
-          Create{' '}
-          <span className="text-[#007AFF]">
-            Tasks And Notes{' '}
-          </span>
-          With Ease
+        The subscription that you and your family will love
         </h1>
         <p className="mb-6 font-inter leading-relaxed font-normal text-lg text-[#56687B] md:w-[70%]">
-          With our calendar app, you can{' '}
-          <span className="text-[#007AFF] font-semibold">
-            quickly create notes and tasks
-          </span>
-          {' '}to help you plan and organize your tasks and projects.
+        Receive a beautiful hand picked card every year, with your personalised message inside.
         </p>
       </div>
       <div className=" md:pl-12 md:ml-12 h-full w-full md:w-1/2 w-5/6  ">
@@ -26,7 +21,7 @@ const Features1 = () => {
           <img
             alt="hero"
             className=" m-auto rounded-3xl "
-            src="https://res.cloudinary.com/dnzjbmzag/image/upload/v1696014675/Chart8.png"
+            src={familyCard}
           />
         </div>
       </div>
@@ -37,24 +32,16 @@ const Features1 = () => {
       <div className="h-full w-full rounded-3xl md:w-1/2 w-5/6 mb-10 md:mb-0 featureGradient1">
         <img
           alt="hero"
-          className="rounded-3xl px-16 my-12"
-          src="https://res.cloudinary.com/dnzjbmzag/image/upload/v1696014460/dashboardChart.png"
+          className="rounded-3xl m-auto"
+          src={plotter}
         />
       </div>
       <div className="md:w-1/2  flex flex-col md:pl-12 md:ml-12 md:items-start md:text-left  items-center text-center ">
         <h1 className="md:w-5/6 sm:text-4xl text-4xl mb-4 font-semibold text-[#030647]">
-          Streamline your{' '}
-          <span className="text-[#007AFF]">
-            Workflow{' '}
-          </span>
-          In Seconds
+          We bring the personal touch
         </h1>
         <p className="mb-4 font-inter leading-relaxed text-lg text-[#56687B] font-normal md:w-4/5">
-          With our calendar app, you can{' '}
-          <span className="text-[#007AFF] font-semibold">
-            quickly create notes and tasks
-          </span>
-          {' '}to help you plan and organize your tasks projects.
+          All cards are hand written by our innovative plotter machine, which uses a real pen to write your message.
         </p>
       </div>
     </div>
