@@ -11,7 +11,7 @@ const Benefits = () => {
               The subscription that you and your family will love
               </h1>
               <p className="mb-6 font-inter leading-relaxed font-normal text-lg text-[#56687B] md:w-[70%]">
-              Receive a beautiful hand picked card every year, with your personalised message inside.
+              Receive a beautiful hand picked card every year, with your personalised message inside. At the moment we print the same message every year, but are working on adding the ability to change the message each year.
               </p>
             </div>
             <div className=" md:pl-12 md:ml-12 h-full w-full md:w-1/2 w-5/6  ">
@@ -39,7 +39,7 @@ const Benefits = () => {
                 We bring the personal touch
               </h1>
               <p className="mb-4 font-inter leading-relaxed text-lg text-[#56687B] font-normal md:w-4/5">
-                We print your personalised message onto the card. At the moment we will print the message in black ink, but we're working on adding more <span>colours.</span> All cards are written by our innovative plotter machine, which uses a real pen to give that quality personal feel.
+                We print your personalised message onto the card. All cards are written by our innovative plotter machine, which uses a real pen to give that quality personal feel.
 
               </p>
             </div>
