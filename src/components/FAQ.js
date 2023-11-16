@@ -1,7 +1,7 @@
 const FAQ = () => {
     return (
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <h2 className="text-3xl font-extrabold text-zinc-900 text-center mb-12">
+        <h2 className="md:w-5/6 sm:text-4xl text-4xl mb-4 font-semibold text-center mb-12">
           Frequently Asked Questions
         </h2>
         <dl>
@@ -42,10 +42,10 @@ const FAQ = () => {
           </div>
           <div className="py-6">
             <dt className="text-lg leading-6 font-medium text-zinc-900">
-              How do I contact support?
+              What style of cards are they i.e. funny, rude, etc?
             </dt>
             <dd className="mt-2 text-base text-zinc-500">
-              You can contact our support team by sending us an e-mail or via our contact form.
+              We avoid rude and cheeky cards that may put people off. We focus on elegant and timeless designs that suit all Mothers and Fathers.
             </dd>
           </div>
         </dl>

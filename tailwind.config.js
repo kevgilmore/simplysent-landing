@@ -10,7 +10,8 @@ module.exports = {
       },
     },
     fontFamily: {
-      'sans': ['Arial']
+      poppins: ["Poppins", "sans-serif"],
+      alatsi: ["ALATSI", "sans-serif"],
     }
   },
   plugins: [],

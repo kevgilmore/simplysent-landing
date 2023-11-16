@@ -2,7 +2,6 @@
 
 import './App.css';
 import CTA from './components/CTA.js';
-import Details from './components/Details.js';
 import FAQ from './components/FAQ.js';
 import Benefits from './components/Benefits.js';
 import Features from './components/Features.js';
@@ -21,8 +20,6 @@ function App() {
       <Benefits />
 
       <Features />
-
-      {/* <Details /> */}
 
       <CTA />
 

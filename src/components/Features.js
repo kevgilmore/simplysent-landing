@@ -1,18 +1,15 @@
 import mday from '../img/mday.jpg'
 import fday from '../img/fday.jpg'
-import envelopeImg from '../img/envelope.jpg'
-import envelopeBackImg from '../img/envelopeBack.jpg'
-import insideCardImg from '../img/insideCard.jpg'
 
 const Features = () => {
     return (
       <section className="mt-12 pt-16 md:mb-32 w-4/5 mx-auto">
         <div className="text-center ">
           <div className="md:w-3/5 lg:w-4/5 md:mx-auto">
-            <h2 className="text-4xl text-[#0E004A] font-bold lg:text-5xl pt-3 mt-2">
+            <h2 className="md:w-5/6 sm:text-4xl text-4xl mb-4 font-semibold pt-3 mt-2">
               Beyond Ordinary Cards
             </h2>
-            <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
+            <p className="mt-3 font-inter leading-relaxed font-body text-sm text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
             Quality greetings cards combine exquisite materials and elegant design to create a card that is as unique and special as the person you send it to.
             Carefully selected from one of our boutique card makers.
             </p>
@@ -28,7 +25,7 @@ const Features = () => {
                     <h2 className="font-bold text-[#0E004A] font-gray-900  text-2xl">
                       Father's Day Card Example
                     </h2>
-                    <p className="text-sm xl:text-base text-[#453878] pt-3">
+                    <p className="text-sm md:text-lg leading-relaxed text-[#453878] pt-3">
                     Show your Dad how much you care with a timeless and thoughtful card. We avoid rude and cheeky cards. Note, the actual card may vary.
                     </p>
                   </div>
@@ -48,7 +45,7 @@ const Features = () => {
                     <h2 className="font-bold text-[#0E004A] font-gray-900  text-2xl">
                       Mother's Day Card Example
                     </h2>
-                    <p className="text-sm xl:text-base text-[#453878] pt-3">
+                    <p className="text-sm md:text-lg leading-relaxed text-[#453878] pt-3">
                       Surprise your Mum with a pleasing card. We avoid cheesy and cliché cards, and instead focus on elegant and thoughtful designs. Note, actual card may vary.
                     </p>
                   </div>
