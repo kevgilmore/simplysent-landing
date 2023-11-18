@@ -9,6 +9,10 @@ import Footer from './components/Footer.js';
 import Hero from './components/Hero.js';
 import Navbar from './components/Navbar.js';
 
+import ReactGA from 'react-ga4'
+
+ReactGA.initialize("G-JRT058C4VQ");
+
 function App() {
   return (  
     <div className="App">
