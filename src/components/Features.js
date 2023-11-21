@@ -9,7 +9,7 @@ const Features = () => {
             <h2 className="md:w-5/6 sm:text-4xl text-4xl mb-4 font-semibold pt-3 mt-2">
               Beyond Ordinary Cards
             </h2>
-            <p className="mt-3 font-inter leading-relaxed font-body text-sm text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
+            <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
             Quality greetings cards combine exquisite materials and elegant design to create a card that is as unique and special as the person you send it to.
             Carefully selected from one of our boutique card makers.
             </p>
