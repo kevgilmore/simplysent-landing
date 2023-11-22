@@ -14,7 +14,7 @@ const Features = () => {
             Carefully selected from one of our boutique card makers.
             </p>
             <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
-            All cards are A5 that measures 148 x 210 mm or 5.8 x 8.3 inches
+            All cards are A6 that measures 105 x 148 mm or 4.1 x 5.8 inches
             </p>
           </div>
           <div className=" mx-auto pt-6 md:px-8">
