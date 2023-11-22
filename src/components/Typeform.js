@@ -1,21 +1,23 @@
-import React, { useEffect } from 'react';
+import { SliderButton  } from '@typeform/embed-react'
 
 const Typeform = () => {
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = '//embed.typeform.com/next/embed.js';
-    script.async = true;
-    document.head.appendChild(script);
 
-    return () => {
-      // Clean up the script when the component unmounts
-      document.head.removeChild(script);
-    };
-  }, []);
+  const buttonStyle = {
+    padding: '10px 20px',
+    borderRadius: 10,
+    border: 'none',
+    background: '#521442',
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 700,
+    cursor: 'pointer',
+  }
 
   return (
-    <div data-tf-live="01HF7K4E0F2YN6BSXTPBNGYVRA"></div>
-  );
+    <SliderButton id="Pe3D5X40" style={buttonStyle}>
+      Subscribe Now
+    </SliderButton>
+  )
 };
 
 export default Typeform;

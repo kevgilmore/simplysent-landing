@@ -1,3 +1,5 @@
+import Typeform from "./Typeform"
+
 const CTA = () => {
     return (
       <div className="pt-12 pb-12">
@@ -10,7 +12,7 @@ const CTA = () => {
               Sign up in just 2 minutes and never worry about forgetting another card again.
             </p>
             <div className="pt-8 flex flex-col md:flex-row space-y-2 md:space-y-0 justify-center">
-              <div data-tf-live="01HF7K4E0F2YN6BSXTPBNGYVRA"></div>
+              <Typeform/>
             </div>
           </div>
         </div>
