@@ -11,7 +11,7 @@ const Benefits = () => {
               The subscription that you and your family will love
               </h1>
               <p className="mb-6 font-inter leading-relaxed font-body text-lg text-[#56687B] md:w-[70%]">
-              Receive a beautiful hand picked card every year, with your personalised message inside. At the moment we print the same message every year, but are working on adding the ability to change the message each year.
+              Receive a beautiful hand picked card every year, with your personalised message inside. We will remind you to write a new message each year, and if you forget, don't worry, we'll write a new message for you. 
               </p>
             </div>
             <div className=" md:pl-12 md:ml-12 h-full w-full md:w-1/2 w-5/6  ">
