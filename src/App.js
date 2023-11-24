@@ -11,10 +11,24 @@ import Navbar from './components/Navbar.js';
 
 import ReactGA from 'react-ga4'
 import Banner from './components/Banner.js';
+import ReactPixel from 'react-facebook-pixel';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
+
+
+
 function App() {
+  const advancedMatching = { em: 'hello@simplysent.co' }; // optional, more info: https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+  const options = {
+    autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
+    debug: false, // enable logs
+  };
+
+  ReactPixel.init('ID907664617393399', advancedMatching, options);
+
+  ReactPixel.pageView(); // For tracking page view
+
   return (  
     <div className="App">
 
