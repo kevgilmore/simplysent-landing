@@ -10,6 +10,7 @@ import Hero from './components/Hero.js';
 import Navbar from './components/Navbar.js';
 
 import ReactGA from 'react-ga4'
+import Banner from './components/Banner.js';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
@@ -18,6 +19,8 @@ function App() {
     <div className="App">
 
       <Navbar />
+
+      <Banner />
 
       <Hero />
 

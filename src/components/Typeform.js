@@ -22,8 +22,8 @@ const Typeform = () => {
       style={buttonStyle}
       onReady={() => {
         ReactGA.event({
-          category: 'User interaction',
-          action: 'Typeform button pressed',
+          category: 'Button Pressed',
+          action: 'Typeform',
           label: formId,
         })
       }}
