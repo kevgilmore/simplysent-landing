@@ -15,9 +15,6 @@ import ReactPixel from 'react-facebook-pixel';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
-
-
-
 function App() {
   const advancedMatching = { em: 'hello@simplysent.co' }; // optional, more info: https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
   const options = {

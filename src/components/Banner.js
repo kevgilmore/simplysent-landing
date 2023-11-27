@@ -14,11 +14,11 @@ const Banner = () => {
       }
 
     return (
-        <div className="px-2 bg-gray-900 text-white">
+        <div className="px-2 bg-green-700 text-white">
   <div className=" text-center container py-2">
     <div className="flex flex-row justify-center">
       <span className="font-medium">
-       Black Friday Offer Get x5 FREE Christmas Cards (NO Credit Card Required) {' '}
+       Christmas Offer, Get x5 FREE Christmas Cards (NO Credit Card Required) {' '}
       </span>
 
 
@@ -29,12 +29,12 @@ const Banner = () => {
       onReady={() => {
         ReactGA.event({
           category: 'Button Pressed',
-          action: 'Typeform black friday',
+          action: 'Typeform christmas offer',
           label: formId,
         })
       }}
     >
-      START NOW
+      GET OFFER
     </PopupButton>
     </div>
   </div>
