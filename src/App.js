@@ -12,6 +12,7 @@ import Navbar from './components/Navbar.js';
 import ReactGA from 'react-ga4'
 import Banner from './components/Banner.js';
 import ReactPixel from 'react-facebook-pixel';
+import Popup from './components/feedback/Popup.js';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
@@ -30,6 +31,8 @@ function App() {
     <div className="App">
 
       <Navbar />
+
+      <Popup />
 
       <Banner />
 
