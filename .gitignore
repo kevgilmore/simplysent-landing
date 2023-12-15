@@ -24,3 +24,5 @@ yarn-error.log*
 
 # Editor directories and files
 .vscode
+.fleet
+.idea

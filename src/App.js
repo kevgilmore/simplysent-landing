@@ -13,6 +13,8 @@ import ReactGA from 'react-ga4'
 import Banner from './components/Banner.js';
 import ReactPixel from 'react-facebook-pixel';
 import Popup from './components/feedback/Popup.js';
+import flagsmith from "flagsmith";
+import { FlagsmithProvider } from 'flagsmith/react';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
@@ -27,28 +29,35 @@ function App() {
 
   ReactPixel.pageView(); // For tracking page view
 
-  return (  
-    <div className="App">
+  return (
+    <FlagsmithProvider
+      options={{
+        environmentID: '2QPJDQSNKQF8aQbR6y3AwE',
+      }}
+      flagsmith={flagsmith}
+    >
+      <div className="App">
 
-      <Navbar />
+        <Navbar />
 
-      <Popup />
+        <Popup/>
 
-      <Banner />
+        <Banner />
 
-      <Hero />
+        <Hero />
 
-      <Benefits />
+        <Benefits />
 
-      <Features />
+        <Features />
 
-      <CTA />
+        <CTA />
 
-      <FAQ />
+        <FAQ />
 
-      <Footer />
+        <Footer />
 
-    </div> // end of App
+      </div>
+    </FlagsmithProvider>
   );
 }
 
