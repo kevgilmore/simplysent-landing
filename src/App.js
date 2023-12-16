@@ -32,7 +32,7 @@ function App() {
   return (
     <FlagsmithProvider
       options={{
-        environmentID: '2QPJDQSNKQF8aQbR6y3AwE',
+        environmentID: process.env.REACT_APP_FLAGSMITH_ENVIRONMENT_ID || 'U2rissSHRPri5VES6NCEpf',
       }}
       flagsmith={flagsmith}
     >

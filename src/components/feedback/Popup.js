@@ -1,23 +1,41 @@
 import "./style.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaCheckCircle } from "react-icons/fa";
 import ReactStars from "react-rating-stars-component";
 import { useFlags } from "flagsmith/react";
 
 const Popup = () => {
-  const flags = useFlags(["feedback_popup"]);
-  const [hidePopup, setHidePopup] = useState(false);
-  const [hideThankYou, setHideThankYou] = useState(true);
-  const [hideStarFeedback, setHideStarFeedback] = useState(false);
+    const apiUrl = "https://zgxbj5zic1.execute-api.us-east-1.amazonaws.com/dev/"
 
-  const handleSubmit = (response) => {
+    const flags = useFlags(["feedback_popup"]);
+    const [hidePopup, setHidePopup] = useState(true);
+    const [hideThankYou, setHideThankYou] = useState(true);
+    const [hideStarFeedback, setHideStarFeedback] = useState(false);
+    const [question, setQuestion] = useState("");
+
+    // Qet question1 from lambda
+    useEffect(() => {
+        fetch(apiUrl, {
+          method: "GET",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => { 
+            setQuestion(data.questions[0].text)
+            setHidePopup(false)
+        })
+        .catch((error) => console.log("Unable to get question due to ", error))
+    });
+
+    const handleSubmit = (response) => {
     setHideStarFeedback(true);
     setHideThankYou(false);
-    
+
     // send response to lambda
     setTimeout(() => {
-        fetch("https://zgxbj5zic1.execute-api.us-east-1.amazonaws.com/dev/",
+        fetch(apiUrl,
             {
                 method: "POST",
                 mode: "cors",
@@ -32,9 +50,9 @@ const Popup = () => {
 
       setHidePopup(true);
     }, 2000);
-  };
+    };
 
-  return (
+    return (
     <div>
       {flags.feedback_popup.enabled && (
         <div
@@ -49,7 +67,7 @@ const Popup = () => {
 
           <div className="star-feedback" hidden={hideStarFeedback}>
             <h2 className="p-8 text-white text-lg font-bold">
-              How do you like the page?
+              {question}
             </h2>
 
             <div className="h-0.5 w-20 bg-yellow-600 relative left-5"></div>
@@ -73,7 +91,7 @@ const Popup = () => {
         </div>
       )}
     </div>
-  );
+    );
 };
 
 export default Popup;
