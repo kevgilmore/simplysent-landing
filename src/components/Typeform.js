@@ -27,6 +27,12 @@ const Typeform = () => {
           label: formId,
         })
       }}
+      onClose={() => {
+        console.log('form closed')
+        setTimeout(() => {
+          console.log('feedback trigger')
+        }, 4000);
+      }}
     >
       Subscribe Now
     </SliderButton>

@@ -15,6 +15,7 @@ import ReactPixel from 'react-facebook-pixel';
 import Popup from './components/feedback/Popup.js';
 import flagsmith from "flagsmith";
 import { FlagsmithProvider } from 'flagsmith/react';
+import Testimonials from './components/Testimonials.js';
 
 ReactGA.initialize("G-JRT058C4VQ");
 
@@ -42,13 +43,15 @@ function App() {
 
         <Popup/>
 
-        <Banner />
+        {/* <Banner /> */}
 
         <Hero />
 
         <Benefits />
 
         <Features />
+
+        <Testimonials />
 
         <CTA />
 

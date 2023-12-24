@@ -6,7 +6,7 @@ const CTA = () => {
         <div className="rounded-2xl py-16 md:py-0 md:h-96 flex justify-center align-center shadow-lg bg-white w-5/6 mx-auto  bg-gradient-to-r to-[#2e0553] via-cyan-600 from-purple-600">
           <div className="text-center text-white w-4/5 m-auto pt-12 md:pt-0">
             <h1 className="text-3xl md:text-4xl font-bold">
-            Sign up in just 2 minutes and never worry about forgetting another card again.
+            Sign up in two minutes and never worry about forgetting another card again.
             </h1>
             <div className="pt-8 flex flex-col md:flex-row space-y-2 md:space-y-0 justify-center">
               <Typeform/>

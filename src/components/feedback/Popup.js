@@ -12,10 +12,10 @@ const Popup = () => {
     const [hidePopup, setHidePopup] = useState(true);
     const [hideThankYou, setHideThankYou] = useState(true);
     const [hideStarFeedback, setHideStarFeedback] = useState(false);
-    const [question, setQuestion] = useState("");
+    const [question, setQuestion] = useState("Loading...");
 
-    // Qet question1 from lambda
     useEffect(() => {
+        // Get question1 from lambda
         fetch(apiUrl, {
           method: "GET",
           mode: "cors",
@@ -24,32 +24,28 @@ const Popup = () => {
         .then(response => response.json())
         .then(data => { 
             setQuestion(data.questions[0].text)
-            setHidePopup(false)
         })
         .catch((error) => console.log("Unable to get question due to ", error))
     });
 
     const handleSubmit = (response) => {
-    setHideStarFeedback(true);
-    setHideThankYou(false);
-
-    // send response to lambda
-    setTimeout(() => {
-        fetch(apiUrl,
-            {
-                method: "POST",
-                mode: "cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ questionId: 3, response: response }),
-            }
-        ).then((response) => {
-            console.log(response);
-        }).catch((error) => {
-            console.log("Unable to send feedback due to ",error);
-        });;
-
-      setHidePopup(true);
-    }, 2000);
+      fetch(apiUrl,
+          {
+              method: "POST",
+              mode: "cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ questionId: 3, response: response }),
+          }
+      ).then((response) => {
+          console.log(response);
+      }).catch((error) => {
+          console.log("Unable to send feedback due to ",error);
+      });;
+      setHideStarFeedback(true);
+      setHideThankYou(false);
+      setTimeout(() => {
+        setHidePopup(true);
+      }, 2000);
     };
 
     return (

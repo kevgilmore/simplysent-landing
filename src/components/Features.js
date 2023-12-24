@@ -6,7 +6,7 @@ const Features = () => {
       <section className="mt-12 pt-16 md:mb-32 w-4/5 mx-auto">
         <div className="text-center ">
           <div className="md:w-3/5 lg:w-4/5 md:mx-auto">
-            <h2 className="md:w-5/6 sm:text-4xl text-4xl mb-4 font-semibold pt-3 mt-2">
+            <h2 className="text-4xl text-[#0E004A] font-bold lg:text-5xl pt-3 mt-2">
               Beyond Ordinary Cards
             </h2>
             <p className="mt-3 text-sm md:text-lg leading-relaxed text-[#453878] pt-2 lg:w-4/5 lg:mx-auto 3xl:w-3/5">
