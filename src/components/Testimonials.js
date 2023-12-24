@@ -7,7 +7,7 @@ const Testimonials = () => {
         Testimonials
       </h1>
       <p className="mt-3 leading-relaxed text-[#585C67] pt-2 md:w-3/5 mx-auto">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+        Hear from some of our early testers, who love SimplySent. 
       </p>
     </div>
     <div className="mt-20 md:w-4/5 mx-auto ">
@@ -26,7 +26,7 @@ const Testimonials = () => {
               </svg>
             </span>
             <p className="text-[#585C67] text-center">
-              I'm a huge fan of this app, I've found it to be incredibly intuitive overall. Would definitely recommend this if you're looking for an app to make planning that bit easier.
+            The usefulness of the product cannot be over emphasize
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
               <svg
@@ -93,11 +93,8 @@ const Testimonials = () => {
             <div className="flex flex-col pt-4 mt-6 mx-auto text-center">
               <div>
                 <h2 className="font-bold text-lg">
-                  John Doe
+                  Zaid I
                 </h2>
-                <p className="text-gray-600">
-                  Founder
-                </p>
                 <img />
               </div>
             </div>
@@ -117,7 +114,7 @@ const Testimonials = () => {
               </svg>
             </span>
             <p className="text-[#585C67] text-center">
-              This app has been pivotal for helping our team collaborate on tasks and new plans, I’d definitely recommend this if you’d like an intuitive planner app.
+            I find it useful as I may sometimes forget or not have ample time to prepare these cards myself some due to some reasons.
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
               <svg
@@ -184,11 +181,8 @@ const Testimonials = () => {
             <div className="flex flex-col pt-4 mt-6 mx-auto text-center">
               <div>
                 <h2 className="font-bold text-lg">
-                  Emma Doe
+                  Sandra P
                 </h2>
-                <p className="text-gray-600">
-                  Founder
-                </p>
                 <img />
               </div>
             </div>
@@ -208,7 +202,7 @@ const Testimonials = () => {
               </svg>
             </span>
             <p className="text-[#585C67] text-center">
-              I absolutely love the features provided, and that I can create notes to each task also. It really helped streamline my workflow, I would definitely recommend it!
+            It saves me time and hassle by taking care of the card-buying and sending process for me, which is especially helpful during busy times of the year or for people with hectic schedules.
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
               <svg
@@ -275,11 +269,8 @@ const Testimonials = () => {
             <div className="flex flex-col pt-4 mt-6 mx-auto text-center">
               <div>
                 <h2 className="font-bold text-lg">
-                  James Doe
+                  Soloman B
                 </h2>
-                <p className="text-gray-600">
-                  Founder
-                </p>
                 <img />
               </div>
             </div>
