@@ -30,12 +30,13 @@ const Loader = () => {
               console.log("fetching...")
               const question = data.questions[0]
               if (question.type === "star rating") {
+                console.log("got question")
                   setQuestionTitle(question.text)
                   setQuestionType(question.type)
                   setLoading(false)
               }
           }).catch((error) => {
-              console.debug("Unable to fetch question due to ", error);
+              console.log("Unable to fetch question due to ", error);
           });
     });
 
