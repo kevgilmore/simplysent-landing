@@ -1,6 +1,6 @@
 const Testimonials = () => {
   return (
-    <section className="relative rounded-3xl bg-[#F7FBFF]">
+    <section className="relative rounded-3xl bg-[#F7FBFF] z-0">
   <div className="w-full mx-auto">
     <div className=" text-center pt-16 mt-14 ">
       <h1 className="text-4xl text-[#0E004A] font-bold lg:text-5xl pt-3 mt-2">

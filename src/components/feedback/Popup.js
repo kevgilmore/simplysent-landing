@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import StarRating from "./types/StarRating";
+import FreeText from "./types/FreeText";
 import ThankYou from "./ThankYou";
 
 const Popup = ({title, type}) => {
@@ -33,11 +34,11 @@ const Popup = ({title, type}) => {
 
     return (
       <div
-        className="popup rounded-t-xl h-60 w-52 bg-zinc-700"
+        className="popup rounded-t-xl h-60 w-52 bg-zinc-700 z-10"
         hidden={hidePopup}
       >
         <IoIosArrowDown
-          onClick={() => console.log("hide popup")}
+          onClick={() => setHidePopup(true)}
           size="24px"
           className="absolute fill-white top-2 right-2 cursor-pointer"
         />
@@ -52,7 +53,12 @@ const Popup = ({title, type}) => {
 
           <div className="h-0.5 w-20 bg-yellow-600 relative left-5"></div>
           
-          <StarRating handleSubmit={handleSubmit} />
+          { type === "star rating" && 
+          <StarRating handleSubmit={handleSubmit} /> }
+
+          { type === "free text" && 
+          <FreeText handleSubmit={handleSubmit} />
+          }
 
         </div>
         }
