@@ -10,6 +10,7 @@ const Loader = () => {
 
   const flags = useFlags(["feedback_popup"]);
   const [loading, setLoading] = useState(true);
+  const [questionId, setQuestionId] = useState();
   const [questionTitle, setQuestionTitle] = useState("Loading...");
   const [questionType, setQuestionType] = useState("Loading...");
 
@@ -30,19 +31,20 @@ const Loader = () => {
         console.log("fetching questions...")
         const question = data.questions[1]
         if (question.type != null) {
+          setQuestionId(question.id)
           setQuestionTitle(question.text)
           setQuestionType(question.type)
           setLoading(false)
         }
       }).catch((error) => {
-          console.log("Unable to fetch question due to ", error);
+          console.log("rate limit");
       });
   });
 
   return (
       <div>
         { flags.feedback_popup.enabled && !loading && (
-          <Popup title={questionTitle} type={questionType} />
+          <Popup id={questionId} title={questionTitle} type={questionType} />
         )}
       </div>
   )
