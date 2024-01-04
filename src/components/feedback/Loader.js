@@ -29,7 +29,7 @@ const Loader = () => {
       .then(response => response.json())
       .then(data => {
         console.log("fetching questions...")
-        const question = data.questions[1]
+        const question = data.questions[0]
         if (question.type != null) {
           setQuestionId(question.id)
           setQuestionTitle(question.text)
@@ -37,7 +37,8 @@ const Loader = () => {
           setLoading(false)
         }
       }).catch((error) => {
-        console.log("rate limit");
+
+        console.log("error fetching questions due to ", error)
       });
   });
 
