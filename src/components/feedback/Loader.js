@@ -37,16 +37,16 @@ const Loader = () => {
           setLoading(false)
         }
       }).catch((error) => {
-          console.log("rate limit");
+        console.log("rate limit");
       });
   });
 
   return (
-      <div>
-        { flags.feedback_popup.enabled && !loading && (
-          <Popup id={questionId} title={questionTitle} type={questionType} />
-        )}
-      </div>
+    <div>
+      {flags.feedback_popup.enabled && !loading && (
+        <Popup id={questionId} title={questionTitle} type={questionType} />
+      )}
+    </div>
   )
 };
 
