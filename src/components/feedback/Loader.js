@@ -1,12 +1,14 @@
 import "./style.css";
 import { useState, useEffect, useRef } from "react";
 import { useFlags } from "flagsmith/react";
+import { useSelector } from "react-redux";
 
 import Popup from "./Popup";
 
 const Loader = () => {
   const apiUrl = "https://zgxbj5zic1.execute-api.us-east-1.amazonaws.com/dev/"
   const controllerRef = useRef();
+  const count = useSelector((state) => state.counter.value)
 
   const flags = useFlags(["feedback_popup"]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,8 @@ const Loader = () => {
   const [questionType, setQuestionType] = useState("Loading...");
 
   useEffect(() => {
+    console.log("count=", count)
+
     if (controllerRef.current) {
       controllerRef.current.abort()
     }

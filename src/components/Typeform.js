@@ -1,8 +1,13 @@
-import { SliderButton  } from '@typeform/embed-react'
+import { SliderButton } from '@typeform/embed-react'
 import ReactGA from 'react-ga4'
+import { useSelector, useDispatch } from 'react-redux'
+import { increment } from '../redux/counterSlice'
 
 const Typeform = () => {
   const formId = "Pe3D5X40"
+
+  const count = useSelector((state) => state.counter.value)
+  const dispatch = useDispatch()
 
   const buttonStyle = {
     padding: '10px 20px',
@@ -27,11 +32,10 @@ const Typeform = () => {
           label: formId,
         })
       }}
+
       onClose={() => {
-        console.log('form closed')
-        setTimeout(() => {
-          console.log('feedback trigger')
-        }, 4000);
+        console.log("count=", count)
+        dispatch(increment())
       }}
     >
       Subscribe Now
