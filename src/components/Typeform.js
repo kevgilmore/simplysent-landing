@@ -1,12 +1,11 @@
 import { SliderButton } from '@typeform/embed-react'
 import ReactGA from 'react-ga4'
-import { useSelector, useDispatch } from 'react-redux'
-import { increment } from '../redux/counterSlice'
+import { useDispatch } from 'react-redux'
+import { changeHidePopup } from '../redux/counterSlice'
 
 const Typeform = () => {
   const formId = "Pe3D5X40"
 
-  const count = useSelector((state) => state.counter.value)
   const dispatch = useDispatch()
 
   const buttonStyle = {
@@ -34,8 +33,7 @@ const Typeform = () => {
       }}
 
       onClose={() => {
-        console.log("count=", count)
-        dispatch(increment())
+        dispatch(changeHidePopup(false))
       }}
     >
       Subscribe Now

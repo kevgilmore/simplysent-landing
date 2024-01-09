@@ -1,11 +1,10 @@
 import { useRef } from 'react';
-
 const FreeText = ({ handleSubmit }) => {
 
   const messageRef = useRef();
 
   const handleInput = (event) => {
-    handleSubmit(messageRef.current.value)
+    handleSubmit(messageRef.current.value) //NOTE ignore warning here
     event.preventDefault();
   }
 

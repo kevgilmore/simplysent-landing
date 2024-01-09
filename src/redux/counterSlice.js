@@ -3,25 +3,19 @@ import { createSlice } from '@reduxjs/toolkit'
 export const counterSlice = createSlice({
   name: 'counter',
   initialState: {
-    value: 0,
-  },
-  reducers: {
-    increment: (state) => {
-      state.value += 1
-    },
-    decrement: (state) => {
-      state.value -= 1
-    },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload
-    },
+    questionsIds: [],
+    hidePopup: true
+  }, reducers: {
     addQuestionId: (state, action) => {
-      state.value.push(action.payload)
-    }
+      state.questionsIds.push(action.payload)
+    },
+    changeHidePopup: (state, action) => {
+      state.hidePopup = action.payload
+    },
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export const { addQuestionId, changeHidePopup } = counterSlice.actions
 
 export default counterSlice.reducer

@@ -3,11 +3,13 @@ import { IoIosArrowDown } from "react-icons/io";
 import StarRating from "./types/StarRating";
 import FreeText from "./types/FreeText";
 import ThankYou from "./ThankYou";
+import { useDispatch, useSelector } from 'react-redux'
+import { changeHidePopup } from '../../redux/counterSlice'
 
 const Popup = ({ id, title, type }) => {
   const apiUrl = "https://zgxbj5zic1.execute-api.us-east-1.amazonaws.com/dev/"
-  const [hidePopup, setHidePopup] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const dispatch = useDispatch()
 
   const handleSubmit = (response) => {
     setSubmitted(true);
@@ -26,19 +28,17 @@ const Popup = ({ id, title, type }) => {
       })
 
       setTimeout(() => {
-        setHidePopup(true);
+        dispatch(changeHidePopup(true))
       }, 2000);
     }
   };
 
-
   return (
     <div
       className="popup rounded-t-xl h-60 w-52 bg-zinc-700 z-10"
-      hidden={hidePopup}
     >
       <IoIosArrowDown
-        onClick={() => setHidePopup(true)}
+        onClick={() => dispatch(changeHidePopup(true))}
         size="24px"
         className="absolute fill-white top-2 right-2 cursor-pointer"
       />
