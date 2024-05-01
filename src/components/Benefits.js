@@ -7,10 +7,10 @@ const Benefits = () => {
         <section className="text-gray-600 w-4/5 mx-auto pt-6">
           <div className="container mx-auto flex px-5 py-10 md:py-24 md:flex-row flex-col items-center">
             <div className="mb-8 md:mb-0 md:w-1/2 flex flex-col md:items-start md:text-left  items-center text-center ">
-              <h1 className="md:w-5/6 sm:text-4xl text-4xl mb-6 font-semibold text-[#0E004A]">
+              <h1 className="md:w-5/6 mb-6 font-bold text-3xl md:text-5xl">
               The subscription that you and your family will love
               </h1>
-              <p className="mb-6 font-inter leading-relaxed font-body text-lg text-[#56687B] md:w-[70%]">
+              <p className="mb-6 leading-relaxed text-gray-600 text-base md:text-lg md:w-[70%]">
               Receive a beautiful hand picked card every year, with your personalised message inside. We will remind you to write a new message each year, and if you forget, don't worry, we'll write a new message for you. 
               </p>
             </div>
@@ -35,10 +35,10 @@ const Benefits = () => {
               />
             </div>
             <div className="md:w-1/2  flex flex-col md:pl-12 md:ml-12 md:items-start md:text-left  items-center text-center ">
-              <h1 className="md:w-5/6 sm:text-4xl text-4xl text-[#0E004A] mb-4 font-semibold">
+              <h1 className="md:w-5/6 mb-4 font-bold text-3xl md:text-5xl">
                 We bring the personal touch
               </h1>
-              <p className="mb-4 font-inter leading-relaxed text-lg text-[#56687B] font-body md:w-4/5">
+              <p className="mb-4 text-gray-600 text-base md:text-lg leading-relaxed md:w-4/5">
                 We print your personalised message onto the card. All cards are written by our innovative plotter machine, which uses a real pen to give that quality personal feel.
 
               </p>

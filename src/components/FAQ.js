@@ -3,7 +3,7 @@ const FAQ = () => {
 <section className="bg-white">
   <div className="mb-24 w-4/5 md:w-2/3 mx-auto">
     <div className=" text-center md:pt-16 md:mt-14">
-      <h1 className="font-bold text-[#0E004A] text-5xl">
+      <h1 className="font-bold text-3xl md:text-5xl">
         Frequently Asked Questions
       </h1>
     </div>
@@ -17,7 +17,7 @@ const FAQ = () => {
           Do I need to choose a new card every year?
           </summary>
           <div>
-            <p className="text-[#585C67] px-4 pb-6">
+            <p className="text-gray-600 text-base md:text-lg px-4 pb-6">
               {' '}No, that's our job! We'll send you a new card every year, so you don't have to worry about choosing a new card and you'll never receive the same card twice.
             </p>
           </div>
@@ -30,7 +30,7 @@ const FAQ = () => {
           Can I change the message inside the card?
           </summary>
           <div>
-            <p className="text-[#585C67] px-4 pb-6">
+            <p className="text-gray-600 text-base md:text-lg px-4 pb-6">
               {' '}Yes! Just send us an e-mail (find contact below) with the message you'd like to include in your card and we'll update your order. We're working on adding this feature to our website, please click here to vote for this feature.
             </p>
           </div>
@@ -43,7 +43,7 @@ const FAQ = () => {
           When do you send the cards?
           </summary>
           <div>
-            <p className="text-[#585C67] px-4 pb-6">
+            <p className="text-gray-600 text-base md:text-lg px-4 pb-6">
               {' '}We consider the distance to the recipients address so they receive the card the day before, or on the day.
               <br></br>
               Mother's Day: 14th March
@@ -60,7 +60,7 @@ const FAQ = () => {
           Can I cancel my subscription?
           </summary>
           <div>
-            <p className="text-[#585C67] px-4 pb-6">
+            <p className="text-gray-600 text-base md:text-lg px-4 pb-6">
             Yes, we can offer a cancellation and refund for all unsent cards. Just send us an e-mail (find contact below) and we'll cancel your subscription.
             </p>
           </div>
@@ -73,7 +73,7 @@ const FAQ = () => {
           What style of cards are they i.e. funny, rude, etc?
           </summary>
           <div>
-            <p className="text-[#585C67] px-4 pb-6">
+            <p className="text-gray-600 text-base md:text-lg px-4 pb-6">
             We avoid rude and cheeky cards that may put people off. We focus on elegant and timeless designs that suit all Mothers and Fathers.
             </p>
           </div>

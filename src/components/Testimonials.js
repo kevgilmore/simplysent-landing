@@ -3,10 +3,10 @@ const Testimonials = () => {
     <section className="relative rounded-3xl bg-[#F7FBFF] z-0">
   <div className="w-full mx-auto">
     <div className=" text-center pt-16 mt-14 ">
-      <h1 className="text-4xl text-[#0E004A] font-bold lg:text-5xl pt-3 mt-2">
+      <h1 className="font-bold text-3xl md:text-5xl pt-3 mt-2">
         Testimonials
       </h1>
-      <p className="mt-3 leading-relaxed text-[#585C67] pt-2 md:w-3/5 mx-auto">
+      <p className="mt-3 text-gray-600 text-base md:text-lg pt-2 md:w-3/5 mx-auto">
         Hear from some of our early testers, who love SimplySent. 
       </p>
     </div>
@@ -25,7 +25,7 @@ const Testimonials = () => {
                 <path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 9 7.558V11a1 1 0 0 0 1 1h2Zm-6 0a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 3 7.558V11a1 1 0 0 0 1 1h2Z" />
               </svg>
             </span>
-            <p className="text-[#585C67] text-center">
+            <p className="text-gray-600 text-base md:text-lg text-center">
             The usefulness of the product cannot be over emphasize
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
@@ -113,7 +113,7 @@ const Testimonials = () => {
                 <path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 9 7.558V11a1 1 0 0 0 1 1h2Zm-6 0a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 3 7.558V11a1 1 0 0 0 1 1h2Z" />
               </svg>
             </span>
-            <p className="text-[#585C67] text-center">
+            <p className="text-gray-600 text-base md:text-lg text-center">
             I find it useful as I may sometimes forget or not have ample time to prepare these cards myself some due to some reasons.
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
@@ -201,7 +201,7 @@ const Testimonials = () => {
                 <path d="M12 12a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1h-1.388c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 9 7.558V11a1 1 0 0 0 1 1h2Zm-6 0a1 1 0 0 0 1-1V8.558a1 1 0 0 0-1-1H4.612c0-.351.021-.703.062-1.054.062-.372.166-.703.31-.992.145-.29.331-.517.559-.683.227-.186.516-.279.868-.279V3c-.579 0-1.085.124-1.52.372a3.322 3.322 0 0 0-1.085.992 4.92 4.92 0 0 0-.62 1.458A7.712 7.712 0 0 0 3 7.558V11a1 1 0 0 0 1 1h2Z" />
               </svg>
             </span>
-            <p className="text-[#585C67] text-center">
+            <p className="text-gray-600 text-base md:text-lg text-center">
             It saves me time and hassle by taking care of the card-buying and sending process for me, which is especially helpful during busy times of the year or for people with hectic schedules.
             </p>
             <div className="flex items-center mx-auto pt-5 mt-2">
