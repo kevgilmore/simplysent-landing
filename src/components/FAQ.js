@@ -3,7 +3,7 @@ const FAQ = () => {
 <section className="bg-white">
   <div className="mb-24 w-4/5 md:w-2/3 mx-auto">
     <div className=" text-center md:pt-16 md:mt-14">
-      <h1 className="font-bold text-3xl md:text-5xl">
+      <h1 className="font-bold text-[#0E004A] text-3xl md:text-5xl">
         Frequently Asked Questions
       </h1>
     </div>

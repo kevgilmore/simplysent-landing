@@ -7,7 +7,7 @@ const Benefits = () => {
         <section className="text-gray-600 w-4/5 mx-auto pt-6">
           <div className="container mx-auto flex px-5 py-10 md:py-24 md:flex-row flex-col items-center">
             <div className="mb-8 md:mb-0 md:w-1/2 flex flex-col md:items-start md:text-left  items-center text-center ">
-              <h1 className="md:w-5/6 mb-6 font-bold text-3xl md:text-5xl">
+              <h1 className="md:w-5/6 mb-6 text-[#0E004A] font-bold text-3xl md:text-5xl">
               The subscription that you and your family will love
               </h1>
               <p className="mb-6 leading-relaxed text-gray-600 text-base md:text-lg md:w-[70%]">
@@ -35,7 +35,7 @@ const Benefits = () => {
               />
             </div>
             <div className="md:w-1/2  flex flex-col md:pl-12 md:ml-12 md:items-start md:text-left  items-center text-center ">
-              <h1 className="md:w-5/6 mb-4 font-bold text-3xl md:text-5xl">
+              <h1 className="md:w-5/6 mb-4 text-[#0E004A] font-bold text-3xl md:text-5xl">
                 We bring the personal touch
               </h1>
               <p className="mb-4 text-gray-600 text-base md:text-lg leading-relaxed md:w-4/5">

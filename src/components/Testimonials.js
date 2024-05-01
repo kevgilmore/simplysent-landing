@@ -3,7 +3,7 @@ const Testimonials = () => {
     <section className="relative rounded-3xl bg-[#F7FBFF] z-0">
   <div className="w-full mx-auto">
     <div className=" text-center pt-16 mt-14 ">
-      <h1 className="font-bold text-3xl md:text-5xl pt-3 mt-2">
+      <h1 className="font-bold text-[#0E004A] text-3xl md:text-5xl pt-3 mt-2">
         Testimonials
       </h1>
       <p className="mt-3 text-gray-600 text-base md:text-lg pt-2 md:w-3/5 mx-auto">

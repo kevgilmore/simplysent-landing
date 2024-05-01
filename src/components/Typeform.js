@@ -36,7 +36,7 @@ const Typeform = () => {
         dispatch(changeHidePopup(false))
       }}
     >
-      Subscribe Now
+      Join Waiting List
     </SliderButton>
   )
 };
