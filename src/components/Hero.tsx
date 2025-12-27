@@ -46,14 +46,14 @@ const Hero = () => {
                             href="https://app.simplysent.co"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group relative flex items-center justify-center bg-gradient-to-r from-[#6159A5] via-[#8B83F2] to-[#B1A9FF] text-white px-6 py-2.5 md:px-10 md:py-4 rounded-xl md:rounded-2xl font-bold font-sans text-sm md:text-lg transition-all shadow-xl hover:scale-105 active:scale-95 w-[70%] sm:w-auto min-w-[200px] overflow-hidden mt-6 md:mt-10"
+                            className="group relative flex items-center justify-center bg-gradient-to-r from-[#6159A5] via-[#8B83F2] to-[#B1A9FF] text-white px-6 py-4 md:px-10 md:py-4 rounded-xl md:rounded-2xl font-bold font-sans text-sm md:text-lg transition-all shadow-xl hover:scale-105 active:scale-95 w-[70%] sm:w-auto min-w-[200px] overflow-hidden mt-6 md:mt-10"
                         >
                             <span className="relative z-10">Use App Now</span>
                             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
 
                         {/* App Stores: Shrunk version */}
-                        <div className="mt-12 flex flex-col items-center gap-4">
+                        <div className="mt-6 md:mt-12 flex flex-col items-center gap-4">
                             <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-white/30 font-sans">
                                 Coming Soon
                             </span>
@@ -102,8 +102,19 @@ const Hero = () => {
                     </div>
                 </div>
 
+                {/* Explore Indicator: Positioned above mockup */}
+                <button
+                    onClick={scrollToFeatures}
+                    className="absolute bottom-[35dvh] md:bottom-[42dvh] left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 text-white/60 hover:text-white transition-all cursor-pointer animate-bounce group z-[100] pointer-events-auto"
+                >
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans">
+                        Explore
+                    </span>
+                    <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-1" />
+                </button>
+
                 {/* Bottom Section: Cutoff Mockup (Starts at 60vh) */}
-                <div className="h-[40dvh] w-full flex flex-col items-center justify-start overflow-hidden pointer-events-none">
+                <div className="h-[40dvh] w-full flex flex-col items-center justify-start overflow-hidden pointer-events-none pt-14 md:pt-0">
                     <div className="w-[70vw] max-w-[260px] sm:max-w-[320px] md:max-w-[450px] lg:max-w-[550px] transition-all duration-1000 animate-in fade-in slide-in-from-bottom-20 delay-500">
                         <img
                             src="/mockup1.png"
@@ -112,21 +123,10 @@ const Hero = () => {
                         />
                     </div>
                 </div>
-
-                {/* Explore Indicator: Absolutely pinned for iPhone visibility */}
-                <button
-                    onClick={scrollToFeatures}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 text-[#8B83F2] hover:text-[#B1A9FF] transition-all cursor-pointer animate-bounce group z-[100] pointer-events-auto"
-                >
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans">
-                        Explore
-                    </span>
-                    <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-1" />
-                </button>
             </div>
 
             {/* THE REVEAL: Natural scrolling section */}
-            <div className="relative z-0 w-full flex flex-col items-center -mt-[40dvh] pb-32">
+            <div className="relative z-0 w-full flex flex-col items-center -mt-[40dvh] pb-32 pt-14 md:pt-0">
                 <div className="w-[70vw] max-w-[260px] sm:max-w-[320px] md:max-w-[450px] lg:max-w-[550px] transition-all duration-1000 animate-in fade-in slide-in-from-bottom-20 delay-500">
                     <img
                         src="/mockup1.png"
