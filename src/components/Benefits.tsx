@@ -47,7 +47,6 @@ const Benefits = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
                     {benefits.map((item, index) => (
-                        {/* @ts-expect-error - JS component */}
                         <PixelCard
                             key={index}
                             variant={item.variant}
