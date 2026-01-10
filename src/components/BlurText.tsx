@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
-import type { Easing } from "motion";
+import type { Easing } from "framer-motion";
 
 const buildKeyframes = (from: any, steps: any[]) => {
     const keys = new Set([

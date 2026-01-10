@@ -45,7 +45,6 @@ const ProblemSection = () => {
                     itemScale={0.05}
                 >
                     {companies.map((company, index) => (
-                        // @ts-expect-error - ScrollStackItem is a JS component without types
                         <ScrollStackItem
                             key={index}
                             itemClassName="shadow-2xl !h-[500px] !w-full"

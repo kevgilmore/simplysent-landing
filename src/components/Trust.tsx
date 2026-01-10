@@ -1,5 +1,5 @@
-import React from "react";
 import BlurText from "./BlurText";
+// @ts-expect-error - JS component
 import LogoLoop from "./LogoLoop";
 import {
     SiAmazon,

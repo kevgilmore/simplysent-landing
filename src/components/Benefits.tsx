@@ -1,4 +1,3 @@
-import React from "react";
 // @ts-expect-error - JS component
 import PixelCard from "./PixelCard";
 import { Gift, Clock, Heart } from "lucide-react";
