@@ -70,7 +70,7 @@ interface SilkPlaneProps {
     };
 }
 
-const SilkPlane = forwardRef<THREE.mesh, SilkPlaneProps>(function SilkPlane(
+const SilkPlane = forwardRef<THREE.Mesh, SilkPlaneProps>(function SilkPlane(
     { uniforms },
     ref,
 ) {
@@ -83,20 +83,20 @@ const SilkPlane = forwardRef<THREE.mesh, SilkPlaneProps>(function SilkPlane(
             ref.current &&
             "material" in ref.current
         ) {
-            const material = ref.current.material as ShaderMaterial;
+            const material = ref.current.material as THREE.ShaderMaterial;
             material.uniforms.uTime.value += 0.02 * delta;
         }
     });
 
     return (
-        <THREE.mesh ref={ref} scale={[viewport.width, viewport.height, 1]}>
+        <mesh ref={ref} scale={[viewport.width, viewport.height, 1]}>
             <planeGeometry args={[1, 1]} />
             <shaderMaterial
                 vertexShader={vertexShader}
                 fragmentShader={fragmentShader}
                 uniforms={uniforms}
             />
-        </THREE.mesh>
+        </mesh>
     );
 });
 
@@ -115,7 +115,7 @@ const Silk: FunctionComponent<SilkProps> = ({
     noiseIntensity = 0.1,
     rotation = 0,
 }) => {
-    const meshRef = useRef<THREE.mesh>(null);
+    const meshRef = useRef<THREE.Mesh>(null);
     const uniforms = useMemo(
         () => ({
             uSpeed: { value: speed },
