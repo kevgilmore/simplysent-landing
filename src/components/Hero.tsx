@@ -32,10 +32,10 @@ const Hero = () => {
                 <div className="h-[60dvh] w-full flex flex-col items-center justify-center px-6 text-center shrink-0 pt-6">
                     <div className="space-y-2 md:space-y-4 animate-in fade-in slide-in-from-top-10 duration-1000">
                         <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold font-display text-white tracking-tighter drop-shadow-2xl leading-none">
-                            The Gifting App
+                            The gifting app
                         </h1>
                         <p className="text-base md:text-2xl lg:text-3xl text-white/90 font-medium font-sans drop-shadow-xl max-w-2xl mx-auto pt-4 md:pt-0">
-                            Find the perfect gift in 3 minutes
+                            Find thoughtful, personalised gift ideas in minutes
                         </p>
                     </div>
 

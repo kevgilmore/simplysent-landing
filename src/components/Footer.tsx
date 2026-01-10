@@ -2,7 +2,7 @@ import { Github, Twitter, Instagram, Mail } from "lucide-react";
 
 const Footer = () => {
     return (
-        <footer className="bg-[#0A0A0A] border-t border-white/5 py-12 px-6">
+        <footer className="bg-black border-t border-white/5 py-12 px-6">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
                 <div className="flex flex-col items-center md:items-start space-y-4">
                     <span className="text-2xl font-bold text-white tracking-tight font-display">
