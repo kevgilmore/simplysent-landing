@@ -1,4 +1,3 @@
-// @ts-expect-error - JS component
 import PixelCard from "./PixelCard";
 import { Gift, Clock, Heart } from "lucide-react";
 import BlurText from "./BlurText";
@@ -48,6 +47,7 @@ const Benefits = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
                     {benefits.map((item, index) => (
+                        {/* @ts-expect-error - JS component */}
                         <PixelCard
                             key={index}
                             variant={item.variant}

@@ -1,5 +1,4 @@
 import BlurText from "./BlurText";
-// @ts-expect-error - JS component
 import LogoLoop from "./LogoLoop";
 import {
     SiAmazon,
@@ -51,8 +50,9 @@ const Trust = () => {
                         Trusted by shoppers across
                     </p>
                     <div className="w-full max-w-5xl opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 ease-in-out">
+                        {/* @ts-expect-error - JS component */}
                         <LogoLoop
-                            logos={partnerLogos}
+                            items={partnerLogos}
                             speed={35}
                             gap={100}
                             logoHeight={40}

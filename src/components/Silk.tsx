@@ -1,10 +1,4 @@
-import {
-    forwardRef,
-    useMemo,
-    useRef,
-    type FunctionComponent,
-    type RefObject,
-} from "react";
+import { forwardRef, useMemo, useRef, type FunctionComponent } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Color, type ShaderMaterial } from "three";
 import type { Mesh } from "three";
