@@ -1,10 +1,9 @@
 import { forwardRef, useMemo, useRef, type FunctionComponent } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Color } from "three";
 import * as THREE from "three";
 
 const hexToNormalizedRGB = (hex: string): [number, number, number] => {
-    const color = new Color(hex);
+    const color = new THREE.Color(hex);
     return [color.r, color.g, color.b];
 };
 
