@@ -1,6 +1,5 @@
 import PixelCard from "./PixelCard";
 import { Gift, Clock, Heart } from "lucide-react";
-import BlurText from "./BlurText";
 
 const benefits = [
     {
