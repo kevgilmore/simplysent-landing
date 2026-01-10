@@ -1,4 +1,5 @@
 import BlurText from "./BlurText";
+// @ts-expect-error - JS component
 import LogoLoop from "./LogoLoop";
 import {
     SiAmazon,
@@ -30,13 +31,9 @@ const Trust = () => {
         >
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex flex-col items-center text-center">
-                    <BlurText
-                        text="Gift ideas from brands you recognise"
-                        className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 justify-center max-w-[800px]"
-                        animateBy="words"
-                        delay={100}
-                        repeatOnScroll
-                    />
+                    <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 max-w-[800px]">
+                        Gift ideas from brands you recognise
+                    </h2>
                     <div className="max-w-[800px] mx-auto">
                         <p className="text-xl md:text-2xl font-medium text-[#8B83F2] tracking-tight">
                             Discover products from trusted retailers and
@@ -50,9 +47,8 @@ const Trust = () => {
                         Trusted by shoppers across
                     </p>
                     <div className="w-full max-w-5xl opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 ease-in-out">
-                        {/* @ts-expect-error - JS component */}
                         <LogoLoop
-                            items={partnerLogos}
+                            logos={partnerLogos}
                             speed={35}
                             gap={100}
                             logoHeight={40}

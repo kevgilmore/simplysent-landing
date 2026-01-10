@@ -29,15 +29,11 @@ const Benefits = () => {
             id="benefits"
             className="w-full py-24 bg-neutral-900 text-white overflow-hidden relative z-10"
         >
-            <div className="container mx-auto px-4 md:px-6">
+            <div className="container mx-auto px-4 md-px-6">
                 <div className="text-center mb-12">
-                    <BlurText
-                        text="Thoughtful gifting, without the effort"
-                        className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 justify-center"
-                        animateBy="words"
-                        delay={100}
-                        repeatOnScroll
-                    />
+                    <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 justify-center">
+                        Thoughtful gifting, without the effort
+                    </h2>
                     <div className="max-w-[800px] mx-auto">
                         <p className="text-xl md:text-2xl font-medium text-[#8B83F2] tracking-tight">
                             Personalised recommendations, favourites, and easy
@@ -47,6 +43,7 @@ const Benefits = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center">
                     {benefits.map((item, index) => (
+                        // @ts-expect-error - JS component with multiple props
                         <PixelCard
                             key={index}
                             variant={item.variant}

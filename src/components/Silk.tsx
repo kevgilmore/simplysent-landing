@@ -1,10 +1,9 @@
 import { forwardRef, useMemo, useRef, type FunctionComponent } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Color, type ShaderMaterial } from "three";
-import type { Mesh } from "three";
+import * as THREE from "three";
 
-const hexToNormalizedRGB = (hex: string) => {
-    const color = new Color(hex);
+const hexToNormalizedRGB = (hex: string): [number, number, number] => {
+    const color = new THREE.Color(hex);
     return [color.r, color.g, color.b];
 };
 
@@ -32,14 +31,11 @@ const fragmentShader = `
 
   // 2D simplex noise
   vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-  vec4 permute(vec4 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
   float snoise(vec2 v) {
     const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
     vec2 i = floor(v + dot(v, C.yy));
     vec2 x0 = v - i + dot(i, C.xx);
-    vec2 i1;
-    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
     vec4 x12 = x0.xyxy + C.xxzz;
     x12.xy -= i1;
     i = mod(i, 289.0);
@@ -73,7 +69,7 @@ interface SilkPlaneProps {
     };
 }
 
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
+const SilkPlane = forwardRef<THREE.Mesh, SilkPlaneProps>(function SilkPlane(
     { uniforms },
     ref,
 ) {
@@ -86,8 +82,8 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
             ref.current &&
             "material" in ref.current
         ) {
-            const material = ref.current.material as ShaderMaterial;
-            material.uniforms.uTime.value += 0.1 * delta;
+            const material = ref.current.material as THREE.ShaderMaterial;
+            material.uniforms.uTime.value += 0.02 * delta;
         }
     });
 
@@ -118,7 +114,7 @@ const Silk: FunctionComponent<SilkProps> = ({
     noiseIntensity = 0.1,
     rotation = 0,
 }) => {
-    const meshRef = useRef<Mesh>(null);
+    const meshRef = useRef<THREE.Mesh>(null);
     const uniforms = useMemo(
         () => ({
             uSpeed: { value: speed },
