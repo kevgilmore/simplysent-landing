@@ -1,7 +1,7 @@
 import { forwardRef, useMemo, useRef, type FunctionComponent } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Color } from "three";
-import type { Mesh, ShaderMaterial } from "three";
+import * as THREE from "three";
 
 const hexToNormalizedRGB = (hex: string): [number, number, number] => {
     const color = new Color(hex);
@@ -70,7 +70,7 @@ interface SilkPlaneProps {
     };
 }
 
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
+const SilkPlane = forwardRef<THREE.mesh, SilkPlaneProps>(function SilkPlane(
     { uniforms },
     ref,
 ) {
@@ -89,14 +89,14 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane(
     });
 
     return (
-        <mesh ref={ref} scale={[viewport.width, viewport.height, 1]}>
+        <THREE.mesh ref={ref} scale={[viewport.width, viewport.height, 1]}>
             <planeGeometry args={[1, 1]} />
             <shaderMaterial
                 vertexShader={vertexShader}
                 fragmentShader={fragmentShader}
                 uniforms={uniforms}
             />
-        </mesh>
+        </THREE.mesh>
     );
 });
 
@@ -115,7 +115,7 @@ const Silk: FunctionComponent<SilkProps> = ({
     noiseIntensity = 0.1,
     rotation = 0,
 }) => {
-    const meshRef = useRef<Mesh>(null);
+    const meshRef = useRef<THREE.mesh>(null);
     const uniforms = useMemo(
         () => ({
             uSpeed: { value: speed },
