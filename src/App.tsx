@@ -1,26 +1,25 @@
-import Hero from "./components/Hero";
-import ProblemSection from "./components/ProblemSection";
-import Solution from "./components/Solution";
-import Benefits from "./components/Benefits";
-import UseCases from "./components/UseCases";
-import Trust from "./components/Trust";
-import CTA from "./components/CTA";
-import Footer from "./components/Footer";
-import "./App.css";
+import Hero from "@/components/Hero";
+import LogoBar from "@/components/LogoBar";
+import HowItWorks from "@/components/HowItWorks";
+import GiftQuiz from "@/components/GiftQuiz";
+import Social from "@/components/Social";
+import AppPreview from "@/components/AppPreview";
+import FinalCTA from "@/components/FinalCTA";
+import Footer from "@/components/Footer";
 
 function App() {
-    return (
-        <main className="min-h-screen bg-background text-foreground selection:bg-[#6159a5] selection:text-white">
-            <Hero />
-            <ProblemSection />
-            <Solution />
-            <Benefits />
-            <UseCases />
-            <Trust />
-            <CTA />
-            <Footer />
-        </main>
-    );
+  return (
+    <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <Hero />
+      <LogoBar />
+      <HowItWorks />
+      <GiftQuiz />
+      <Social />
+      <AppPreview />
+      <FinalCTA />
+      <Footer />
+    </main>
+  );
 }
 
 export default App;

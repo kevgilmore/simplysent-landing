@@ -8,7 +8,6 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansHeadline";
     src: url("/fonts/StackSansHeadline-Medium.ttf") format("truetype");
@@ -16,7 +15,6 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansHeadline";
     src: url("/fonts/StackSansHeadline-SemiBold.ttf") format("truetype");
@@ -24,7 +22,6 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansHeadline";
     src: url("/fonts/StackSansHeadline-Bold.ttf") format("truetype");
@@ -32,7 +29,6 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansText";
     src: url("/fonts/StackSansText-Regular.ttf") format("truetype");
@@ -40,7 +36,6 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansText";
     src: url("/fonts/StackSansText-Medium.ttf") format("truetype");
@@ -48,10 +43,16 @@
     font-style: normal;
     font-display: swap;
 }
-
 @font-face {
     font-family: "StackSansText";
     src: url("/fonts/StackSansText-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "StackSansNotch";
+    src: url("/fonts/StackSansNotch-Bold.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -64,6 +65,7 @@ html {
 @theme inline {
     --font-sans: "StackSansText", ui-sans-serif, system-ui, sans-serif;
     --font-display: "StackSansHeadline", ui-sans-serif, system-ui, sans-serif;
+    --font-logo: "StackSansNotch", "StackSansHeadline", ui-sans-serif, system-ui, sans-serif;
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -85,27 +87,68 @@ html {
     --color-ring: var(--ring);
 }
 
-:root {
-    /* Dark Theme Defaults */
-    --background: #121313;
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+:root, .light {
+    --background: #f2efe9;
+    --foreground: #2d2b2e;
+    --card: #ffffff;
+    --card-foreground: #2d2b2e;
+    --popover: #ffffff;
+    --popover-foreground: #2d2b2e;
+    --primary: #5170ff;
+    --primary-foreground: #ffffff;
+    --secondary: #f3f1ee;
+    --secondary-foreground: #2d2b2e;
+    --muted: #f3f1ee;
+    --muted-foreground: #78716c;
+    --accent: #f3f1ee;
+    --accent-foreground: #2d2b2e;
+    --destructive: #ef4444;
+    --border: #e7e5e0;
+    --input: #e7e5e0;
+    --ring: #5170ff;
     --radius: 0.75rem;
+
+    --surface: #f2efe9;
+    --surface-raised: #ffffff;
+    --surface-sunken: #edeae4;
+    --surface-dark: #141318;
+    --text-primary: #2d2b2e;
+    --text-secondary: rgba(45, 43, 46, 0.45);
+    --text-tertiary: rgba(45, 43, 46, 0.25);
+    --border-subtle: rgba(0, 0, 0, 0.04);
+    --border-default: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+    --background: #0e0e11;
+    --foreground: #e8e6e3;
+    --card: #1a1a1f;
+    --card-foreground: #e8e6e3;
+    --popover: #1a1a1f;
+    --popover-foreground: #e8e6e3;
+    --primary: #5170ff;
+    --primary-foreground: #ffffff;
+    --secondary: #1e1e24;
+    --secondary-foreground: #e8e6e3;
+    --muted: #1e1e24;
+    --muted-foreground: #8a8690;
+    --accent: #1e1e24;
+    --accent-foreground: #e8e6e3;
+    --destructive: #ef4444;
+    --border: #2a2a30;
+    --input: #2a2a30;
+    --ring: #5170ff;
+    --radius: 0.75rem;
+
+    --surface: #0e0e11;
+    --surface-raised: #1a1a1f;
+    --surface-sunken: #141418;
+    --surface-dark: #0a0a0d;
+    --text-primary: #e8e6e3;
+    --text-secondary: rgba(232, 230, 227, 0.45);
+    --text-tertiary: rgba(232, 230, 227, 0.25);
+    --border-subtle: rgba(255, 255, 255, 0.04);
+    --border-default: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
@@ -115,36 +158,77 @@ html {
     body {
         @apply bg-background text-foreground font-sans antialiased;
     }
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    h1, h2, h3, h4, h5, h6 {
         @apply font-display;
     }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+
+::selection { background-color: #5170ff; color: white; }
+
+.logo-gradient {
+    background: linear-gradient(90deg, #5170ff, #ff66c4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.cta-gradient {
+    background: linear-gradient(135deg, #5170ff, #8b5cf6, #ff66c4);
 }
 
-::-webkit-scrollbar-track {
-    background: #121313;
+/* Brand logos */
+.brand-logo {
+    opacity: 0.35;
+    transition: opacity 0.4s ease;
+}
+.brand-logo:hover {
+    opacity: 0.6;
+}
+.dark .brand-logo {
+    filter: invert(1);
+    opacity: 0.3;
+}
+.dark .brand-logo:hover {
+    opacity: 0.55;
 }
 
-::-webkit-scrollbar-thumb {
-    background: oklch(0.3 0 0);
-    border-radius: 5px;
+.brand-logo-mono {
+    filter: grayscale(100%);
+    opacity: 0.35;
+    transition: opacity 0.4s ease;
+}
+.brand-logo-mono:hover {
+    opacity: 0.6;
+}
+.dark .brand-logo-mono {
+    filter: grayscale(100%) invert(1);
+    opacity: 0.3;
+}
+.dark .brand-logo-mono:hover {
+    opacity: 0.55;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.4 0 0);
+/* Marquee */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+    animation: marquee 25s linear infinite;
 }
 
-/* Selection color */
-::selection {
-    background-color: #6159a5;
-    color: white;
+/* Grain overlay */
+.grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
 }
