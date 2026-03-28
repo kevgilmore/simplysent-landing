@@ -88,7 +88,7 @@ export default function Hero() {
 
               <motion.div {...fade(0.45)} className="flex flex-wrap gap-3">
                 <a
-                  href="#gift-quiz"
+                  href="#app-preview"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] cta-gradient text-white shadow-xl shadow-[#5170ff]/15 hover:shadow-[#5170ff]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                 >
                   See how it works
