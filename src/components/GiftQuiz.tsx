@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
+import { usePromo } from "@/hooks/usePromo";
 
-type Step = "recipient" | "occasion" | "date" | "preparing" | "results" | "plan";
+type Step =
+  | "recipient"
+  | "gender"
+  | "occasion"
+  | "date"
+  | "preparing"
+  | "results"
+  | "plan";
 
 const recipients = [
   { id: "mum", label: "Mum", emoji: "👩‍🦱" },
@@ -16,10 +24,16 @@ const recipients = [
 
 const occasions = [
   { id: "birthday", label: "Birthday", emoji: "🎂" },
-  { id: "christmas", label: "Christmas", emoji: "🎄" },
   { id: "mothersday", label: "Mother's Day", emoji: "💐" },
   { id: "fathersday", label: "Father's Day", emoji: "👔" },
 ];
+
+const genders = [
+  { id: "male", label: "Male", emoji: "👨" },
+  { id: "female", label: "Female", emoji: "👩" },
+];
+
+const needsGender = new Set(["partner", "other"]);
 
 const months = [
   "Jan",
@@ -57,30 +71,35 @@ const giftResults = [
     price: "£89",
     tag: "Top Pick",
     image: "/img/products/ninja.png",
+    desc: "Powerful 1200W blender with Auto-iQ technology. Crushes ice, blends smoothies, and makes hot soups in minutes.",
   },
   {
     name: "Sony WH-1000XM5",
     price: "£259",
     tag: "Premium",
     image: "/img/products/sony.png",
+    desc: "Industry-leading noise cancelling headphones with 30-hour battery life and crystal-clear hands-free calling.",
   },
   {
     name: "Fitbit Inspire 3",
     price: "£79",
     tag: "Wellness",
     image: "/img/products/fitbit.png",
+    desc: "Slim fitness tracker with 24/7 heart rate monitoring, sleep tracking, and up to 10 days battery life.",
   },
   {
     name: "Funko Pop Collection",
     price: "£24",
     tag: "Fun",
     image: "/img/products/pop.png",
+    desc: "Collectible vinyl figure from the world's most popular pop culture franchise. A fun gift for any fan.",
   },
   {
     name: "Ninja Creami Ice Cream Maker",
     price: "£149",
     tag: "Best Value",
     image: "/img/products/ninaj2.png",
+    desc: "Turn frozen fruit, ice cream, or sorbet into creamy perfection. Seven one-touch programs for endless treats.",
   },
 ];
 
@@ -91,7 +110,6 @@ function getNextOccurrence(month: number, day: number): string {
   if (target <= now) year++;
   return `${day} ${monthFull[month]} ${year}`;
 }
-
 
 // Step indicator dots
 function StepDots({ current, total }: { current: number; total: number }) {
@@ -119,11 +137,19 @@ function PlanStep({
   giftResults,
   dateLabel,
   onChangeGift,
+  promo,
 }: {
   approvedGifts: Set<number>;
-  giftResults: { name: string; price: string; image: string; tag: string }[];
+  giftResults: {
+    name: string;
+    price: string;
+    image: string;
+    tag: string;
+    desc: string;
+  }[];
   dateLabel: string;
   onChangeGift: () => void;
+  promo: { code: string; label: string } | null;
 }) {
   const chosenIndex = [...approvedGifts][0] ?? 0;
   const chosen = giftResults[chosenIndex];
@@ -140,28 +166,65 @@ function PlanStep({
       <div className="grid grid-cols-2 gap-3 mb-5">
         {/* This year */}
         <div className="rounded-2xl bg-secondary p-4 sm:p-5 text-center">
-          <p className="text-[0.6rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-3">This year</p>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-3">
+            This year
+          </p>
           <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-xl bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-2 mb-2">
-            <img src={chosen.image} alt={chosen.name} className="w-full h-full object-contain" />
+            <img
+              src={chosen.image}
+              alt={chosen.name}
+              className="w-full h-full object-contain"
+            />
           </div>
-          <p className="font-semibold text-xs sm:text-sm tracking-tight truncate">{chosen.name}</p>
-          <p className="text-foreground/30 text-[0.65rem] mt-0.5">Delivered by {dateLabel}</p>
-          <button onClick={onChangeGift} className="text-[0.6rem] text-[#5170ff] cursor-pointer mt-1.5">Change</button>
+          <p className="font-semibold text-xs sm:text-sm tracking-tight truncate">
+            {chosen.name}
+          </p>
+          <p className="text-foreground/30 text-[0.7rem] mt-0.5">
+            Delivered by {dateLabel}
+          </p>
+          <button
+            onClick={onChangeGift}
+            className="text-[0.7rem] text-[#5170ff] cursor-pointer mt-1.5"
+          >
+            Change
+          </button>
         </div>
 
         {/* Every year after */}
         <div className="relative rounded-2xl bg-secondary p-4 sm:p-5 text-center overflow-hidden">
-          <p className="text-[0.6rem] font-semibold uppercase tracking-widest text-foreground/25 mb-3">Every year after</p>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-foreground/25 mb-3">
+            Every year after
+          </p>
           <div className="flex items-center justify-center gap-0.5 mb-2">
-            {[giftResults[(chosenIndex + 1) % 5], giftResults[(chosenIndex + 2) % 5], giftResults[(chosenIndex + 3) % 5]].map((g, i) => (
-              <div key={i} className={`rounded-lg bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-1 ${i === 1 ? "w-12 h-12 sm:w-14 sm:h-14 -mx-0.5 z-10 shadow-sm" : "w-9 h-9 sm:w-10 sm:h-10 opacity-50"}`}>
-                <img src={g.image} alt="" className="w-full h-full object-contain" />
+            {[
+              giftResults[(chosenIndex + 1) % 5],
+              giftResults[(chosenIndex + 2) % 5],
+              giftResults[(chosenIndex + 3) % 5],
+            ].map((g, i) => (
+              <div
+                key={i}
+                className={`rounded-lg bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-1 ${i === 1 ? "w-12 h-12 sm:w-14 sm:h-14 -mx-0.5 z-10 shadow-sm" : "w-9 h-9 sm:w-10 sm:h-10 opacity-50"}`}
+              >
+                <img
+                  src={g.image}
+                  alt=""
+                  className="w-full h-full object-contain"
+                />
               </div>
             ))}
           </div>
-          <p className="font-semibold text-xs sm:text-sm tracking-tight">Fresh picks, one tap</p>
-          <p className="text-foreground/30 text-[0.65rem] mt-0.5">We remind you. You approve.</p>
-          <a href="#app-preview" className="text-[0.6rem] text-[#5170ff] mt-1.5 inline-block">See how it works</a>
+          <p className="font-semibold text-xs sm:text-sm tracking-tight">
+            Fresh picks, one tap
+          </p>
+          <p className="text-foreground/30 text-[0.7rem] mt-0.5">
+            We remind you. You approve.
+          </p>
+          <a
+            href="#app-preview"
+            className="text-[0.7rem] text-[#5170ff] mt-1.5 inline-block"
+          >
+            See how it works
+          </a>
         </div>
       </div>
 
@@ -176,39 +239,117 @@ function PlanStep({
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
             {/* Left — pricing */}
             <div className="flex-1 min-w-0">
-              <p className="text-[0.6rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-2">SimplySent subscription</p>
-              <div className="flex items-baseline gap-1.5 mb-2">
-                <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">£29</span>
-                <span className="text-sm text-foreground/30">/year</span>
+              <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-2">
+                SimplySent subscription
+              </p>
+              {promo && (
+                <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#5170ff]/10 to-[#ff66c4]/10 text-[#5170ff] text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                  🎉 {promo.label}
+                </div>
+              )}
+              <div className="flex items-baseline gap-1.5 mb-1">
+                {promo?.code === "EARLYBIRD" ? (
+                  <>
+                    <span className="text-lg text-foreground/30 line-through">
+                      £29
+                    </span>
+                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                      £19
+                    </span>
+                  </>
+                ) : promo?.code === "META_ONE" ? (
+                  <>
+                    <span className="text-lg text-foreground/30 line-through">
+                      £29
+                    </span>
+                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                      £0
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                    £29
+                  </span>
+                )}
+                <span className="text-sm text-foreground/30">
+                  {promo?.code === "META_ONE" ? "/first year" : "/year"}
+                </span>
+                <span className="text-sm text-foreground/40 ml-1">
+                  · For all the family
+                </span>
               </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[0.7rem] text-foreground/35">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-4 gap-y-1 text-[0.7rem] text-foreground/35 mt-2">
                 <span className="flex items-center gap-1.5">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                  Up to 5 people
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5170ff"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Expertly chosen gifts just for them
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                  Every occasion, every year
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5170ff"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Beautifully gift wrapped
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                  Cancel anytime
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#5170ff"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Easy tracking
                 </span>
               </div>
             </div>
 
             {/* Right — CTA */}
-            <div className="shrink-0 flex flex-col items-center sm:items-end gap-2">
+            <div className="shrink-0 flex flex-col items-center gap-2">
               <a
-                href="#gift-quiz"
+                href="https://app.simplysent.co"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/20 hover:shadow-[#5170ff]/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
               >
-                Get started
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                Set up my gifting
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </a>
-              <p className="text-[0.6rem] text-foreground/20">Gifts charged separately</p>
+              <p className="text-[0.7rem] text-foreground/20 text-center">
+                Gifts are charged separately when <br /> you approve them
+              </p>
             </div>
           </div>
         </div>
@@ -218,19 +359,32 @@ function PlanStep({
 }
 
 export default function GiftQuiz() {
+  const promo = usePromo();
   const [step, setStep] = useState<Step>("recipient");
   const [selectedRecipient, setSelectedRecipient] = useState<string | null>(
-    null
+    null,
   );
   const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
+  const [viewingGift, setViewingGift] = useState<number | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   const handleRecipientSelect = (id: string) => {
     setSelectedRecipient(id);
+    if (needsGender.has(id)) {
+      setTimeout(() => setStep("gender"), 350);
+    } else {
+      setTimeout(() => setStep("occasion"), 350);
+    }
+  };
+
+  const handleGenderSelect = (id: string) => {
+    setSelectedGender(id);
     setTimeout(() => setStep("occasion"), 350);
   };
 
@@ -238,11 +392,11 @@ export default function GiftQuiz() {
     setSelectedOccasion(id);
     if (id === "mothersday") {
       setSelectedMonth(2); // March
-      setSelectedDay(30);  // Mother's Day UK is late March
+      setSelectedDay(30); // Mother's Day UK is late March
       setTimeout(() => setStep("preparing"), 350);
     } else if (id === "fathersday") {
       setSelectedMonth(5); // June
-      setSelectedDay(15);  // Father's Day UK is mid June
+      setSelectedDay(15); // Father's Day UK is mid June
       setTimeout(() => setStep("preparing"), 350);
     } else {
       setTimeout(() => setStep("date"), 350);
@@ -273,6 +427,7 @@ export default function GiftQuiz() {
   const handleReset = () => {
     setStep("recipient");
     setSelectedRecipient(null);
+    setSelectedGender(null);
     setSelectedOccasion(null);
     setSelectedMonth(null);
     setSelectedDay(null);
@@ -288,31 +443,17 @@ export default function GiftQuiz() {
     selectedMonth !== null && selectedDay !== null
       ? getNextOccurrence(selectedMonth, selectedDay)
       : "";
-  const stepIndex =
-    step === "recipient"
-      ? 0
-      : step === "occasion"
-        ? 1
-        : step === "date"
-          ? 2
-          : step === "preparing"
-            ? 3
-            : step === "results"
-              ? 4
-              : 5;
-
-  const progressWidth =
-    step === "recipient"
-      ? "16%"
-      : step === "occasion"
-        ? "33%"
-        : step === "date"
-          ? "50%"
-          : step === "preparing"
-            ? "66%"
-            : step === "results"
-              ? "83%"
-              : "100%";
+  const stepOrder: Step[] = [
+    "recipient",
+    "gender",
+    "occasion",
+    "date",
+    "preparing",
+    "results",
+    "plan",
+  ];
+  const stepIndex = stepOrder.indexOf(step);
+  const progressWidth = `${Math.round(((stepIndex + 1) / stepOrder.length) * 100)}%`;
 
   // Days in month helper
   const daysInMonth =
@@ -345,7 +486,8 @@ export default function GiftQuiz() {
             Set up a gift in 30 seconds
           </h2>
           <p className="text-foreground/50 text-lg max-w-lg mx-auto">
-            This is all the effort you'll ever put in. We handle everything else.
+            This is all the effort you'll ever put in. We handle everything
+            else.
           </p>
         </motion.div>
 
@@ -368,15 +510,17 @@ export default function GiftQuiz() {
           <div className="p-6 sm:p-8 md:p-12">
             {/* Header row: dots + start over */}
             <div className="flex items-center justify-between mb-8">
-              <StepDots current={stepIndex} total={6} />
-              {step !== "recipient" && step !== "preparing" && step !== "plan" && (
-                <button
-                  onClick={handleReset}
-                  className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors cursor-pointer"
-                >
-                  Start over
-                </button>
-              )}
+              <StepDots current={stepIndex} total={stepOrder.length} />
+              {step !== "recipient" &&
+                step !== "preparing" &&
+                step !== "plan" && (
+                  <button
+                    onClick={handleReset}
+                    className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors cursor-pointer"
+                  >
+                    Start over
+                  </button>
+                )}
             </div>
 
             <AnimatePresence mode="wait">
@@ -396,7 +540,7 @@ export default function GiftQuiz() {
                     Choose someone you'd like to set up gifting for.
                   </p>
 
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     {recipients.map((r) => (
                       <button
                         key={r.id}
@@ -408,7 +552,48 @@ export default function GiftQuiz() {
                         }`}
                       >
                         <span className="text-2xl">{r.emoji}</span>
-                        <span className="font-medium text-[0.7rem] sm:text-xs">{r.label}</span>
+                        <span className="font-medium text-xs sm:text-sm">
+                          {r.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ─── Step 1b: Gender (partner/other only) ─── */}
+              {step === "gender" && (
+                <motion.div
+                  key="gender"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-2 tracking-tight">
+                    Are they male or female?
+                  </h3>
+                  <p className="text-foreground/40 mb-8">
+                    This helps us pick better gifts for{" "}
+                    <span className="text-[#5170ff]">
+                      {recipientLabel.toLowerCase()}
+                    </span>
+                    .
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-3 max-w-xs">
+                    {genders.map((g) => (
+                      <button
+                        key={g.id}
+                        onClick={() => handleGenderSelect(g.id)}
+                        className={`group relative flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                          selectedGender === g.id
+                            ? "border-[#5170ff]/50 bg-[#5170ff]/5"
+                            : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
+                        }`}
+                      >
+                        <span className="text-3xl">{g.emoji}</span>
+                        <span className="font-medium text-sm">{g.label}</span>
                       </button>
                     ))}
                   </div>
@@ -428,30 +613,33 @@ export default function GiftQuiz() {
                     What's the occasion?
                   </h3>
                   <p className="text-foreground/40 mb-8">
-                    For{" "}
-                    <span className="text-[#5170ff]">{recipientLabel}</span> —
-                    what are we celebrating?
+                    For <span className="text-[#5170ff]">{recipientLabel}</span>{" "}
+                    — what are we celebrating?
                   </p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {occasions.filter((o) => {
-                      if (selectedRecipient === "mum") return o.id !== "fathersday";
-                      if (selectedRecipient === "dad") return o.id !== "mothersday";
-                      return o.id !== "mothersday" && o.id !== "fathersday";
-                    }).map((o) => (
-                      <button
-                        key={o.id}
-                        onClick={() => handleOccasionSelect(o.id)}
-                        className={`group relative flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                          selectedOccasion === o.id
-                            ? "border-[#5170ff]/50 cta-gradient/10"
-                            : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
-                        }`}
-                      >
-                        <span className="text-3xl">{o.emoji}</span>
-                        <span className="font-medium text-sm">{o.label}</span>
-                      </button>
-                    ))}
+                    {occasions
+                      .filter((o) => {
+                        if (selectedRecipient === "mum")
+                          return o.id !== "fathersday";
+                        if (selectedRecipient === "dad")
+                          return o.id !== "mothersday";
+                        return o.id !== "mothersday" && o.id !== "fathersday";
+                      })
+                      .map((o) => (
+                        <button
+                          key={o.id}
+                          onClick={() => handleOccasionSelect(o.id)}
+                          className={`group relative flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                            selectedOccasion === o.id
+                              ? "border-[#5170ff]/50 cta-gradient/10"
+                              : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
+                          }`}
+                        >
+                          <span className="text-3xl">{o.emoji}</span>
+                          <span className="font-medium text-sm">{o.label}</span>
+                        </button>
+                      ))}
                   </div>
                 </motion.div>
               )}
@@ -511,21 +699,22 @@ export default function GiftQuiz() {
                           Day
                         </p>
                         <div className="grid grid-cols-7 gap-1.5 mb-8">
-                          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(
-                            (d) => (
-                              <button
-                                key={d}
-                                onClick={() => setSelectedDay(d)}
-                                className={`aspect-square flex items-center justify-center rounded-lg text-sm transition-all duration-200 cursor-pointer ${
-                                  selectedDay === d
-                                    ? "cta-gradient text-white font-semibold shadow-lg shadow-[#5170ff]/30"
-                                    : "bg-card text-foreground/40 hover:bg-secondary hover:text-foreground/70"
-                                }`}
-                              >
-                                {d}
-                              </button>
-                            )
-                          )}
+                          {Array.from(
+                            { length: daysInMonth },
+                            (_, i) => i + 1,
+                          ).map((d) => (
+                            <button
+                              key={d}
+                              onClick={() => setSelectedDay(d)}
+                              className={`aspect-square flex items-center justify-center rounded-lg text-sm transition-all duration-200 cursor-pointer ${
+                                selectedDay === d
+                                  ? "cta-gradient text-white font-semibold shadow-lg shadow-[#5170ff]/30"
+                                  : "bg-card text-foreground/40 hover:bg-secondary hover:text-foreground/70"
+                              }`}
+                            >
+                              {d}
+                            </button>
+                          ))}
                         </div>
 
                         {/* Confirm */}
@@ -588,21 +777,40 @@ export default function GiftQuiz() {
                     <motion.div
                       className="absolute inset-0 rounded-full cta-gradient opacity-20"
                       animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0, 0.2] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "easeInOut",
+                      }}
                     />
                     <div className="absolute inset-0 rounded-full cta-gradient opacity-10" />
                     <div className="absolute inset-[3px] rounded-full bg-card flex items-center justify-center">
                       <motion.svg
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
-                        transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
-                        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                        transition={{
+                          delay: 0.5,
+                          duration: 1.2,
+                          ease: "easeOut",
+                        }}
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#5170ff"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
                         <motion.polyline
                           points="20 6 9 17 4 12"
                           initial={{ pathLength: 0 }}
                           animate={{ pathLength: 1 }}
-                          transition={{ delay: 0.8, duration: 0.6, ease: "easeOut" }}
+                          transition={{
+                            delay: 0.8,
+                            duration: 0.6,
+                            ease: "easeOut",
+                          }}
                         />
                       </motion.svg>
                     </div>
@@ -634,13 +842,15 @@ export default function GiftQuiz() {
                     </h3>
                     <p className="text-foreground/40 text-sm leading-relaxed">
                       {recipientLabel}'s {occasionLabel.toLowerCase()} is on{" "}
-                      <span className="text-foreground/60 font-medium">{dateLabel}</span>.
-                      We'll wrap it and deliver it on time.
+                      <span className="text-foreground/60 font-medium">
+                        {dateLabel}
+                      </span>
+                      . We'll wrap it and deliver it on time.
                     </p>
                   </div>
 
-                  {/* Gift cards — 2 col mobile, 3 col desktop */}
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* Gift cards */}
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     {giftResults.map((gift, i) => {
                       const isApproved = approvedGifts.has(i);
                       return (
@@ -653,32 +863,65 @@ export default function GiftQuiz() {
                             duration: 0.4,
                             ease: [0.22, 1, 0.36, 1],
                           }}
-                          onClick={() => handleApprove(i)}
-                          className={`group relative rounded-xl border overflow-hidden transition-all duration-300 cursor-pointer ${
+                          className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
                             isApproved
-                              ? "border-[#5170ff]/40 cta-gradient/8 ring-1 ring-[#5170ff]/20"
+                              ? "border-[#5170ff]/40 ring-1 ring-[#5170ff]/20"
                               : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30"
                           }`}
                         >
-                          <div className="absolute top-2 left-2 z-10">
-                            <span className="text-[0.6rem] font-semibold uppercase tracking-wider bg-card/90 backdrop-blur-sm text-[#5170ff] shadow-sm px-2 py-0.5 rounded-full border border-[var(--border-default)]">
+                          <div className="absolute top-2.5 left-2.5 z-10">
+                            <span className="text-[0.65rem] font-semibold uppercase tracking-wider bg-card/90 backdrop-blur-sm text-[#5170ff] shadow-sm px-2.5 py-1 rounded-full border border-[var(--border-default)]">
                               {gift.tag}
                             </span>
                           </div>
 
-                          {isApproved && (
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full cta-gradient flex items-center justify-center shadow-lg shadow-[#5170ff]/40"
-                            >
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          {/* Select checkbox */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleApprove(i);
+                            }}
+                            className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                              isApproved
+                                ? "cta-gradient shadow-lg shadow-[#5170ff]/40"
+                                : "bg-card/80 backdrop-blur-sm ring-1 ring-[var(--border-default)] hover:ring-[#5170ff]/40"
+                            }`}
+                          >
+                            {isApproved ? (
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
                                 <polyline points="20 6 9 17 4 12" />
                               </svg>
-                            </motion.div>
-                          )}
+                            ) : (
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-foreground/25"
+                              >
+                                <path d="M12 5v14M5 12h14" />
+                              </svg>
+                            )}
+                          </button>
 
-                          <div className="relative aspect-[4/3] bg-secondary flex items-center justify-center p-4">
+                          {/* Image — click to open product detail */}
+                          <div
+                            onClick={() => setViewingGift(i)}
+                            className="relative aspect-square bg-secondary flex items-center justify-center p-5 sm:p-6 cursor-pointer"
+                          >
                             <img
                               src={gift.image}
                               alt={gift.name}
@@ -687,46 +930,216 @@ export default function GiftQuiz() {
                             />
                           </div>
 
-                          <div className="px-3 py-2.5 border-t border-[var(--border-subtle)]">
-                            <p className="font-medium text-xs sm:text-sm truncate">
+                          <div
+                            onClick={() => setViewingGift(i)}
+                            className="px-3.5 py-3 border-t border-[var(--border-subtle)] cursor-pointer"
+                          >
+                            <p className="font-medium text-sm sm:text-base truncate">
                               {gift.name}
                             </p>
-                            <p className="text-foreground/40 text-xs mt-0.5">
+                            <p className="text-foreground/40 text-sm mt-0.5">
                               {gift.price}
                             </p>
                           </div>
                         </motion.div>
                       );
                     })}
-
-                    {/* Continue card */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4, duration: 0.4 }}
-                      className="rounded-xl border border-dashed border-[#5170ff]/25 cta-gradient/5 flex flex-col items-center justify-center p-4 text-center gap-3"
-                    >
-                      <div>
-                        <p className="text-foreground/40 text-xs mb-0.5">
-                          {approvedGifts.size > 0
-                            ? `${approvedGifts.size} gift${approvedGifts.size > 1 ? "s" : ""} selected`
-                            : "Tap to select"}
-                        </p>
-                        <p className="text-foreground/20 text-[0.65rem]">
-                          You pay for gift + delivery only
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setStep("plan")}
-                        className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl font-semibold text-xs cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer"
-                      >
-                        Continue
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </motion.div>
                   </div>
+
+                  {/* Continue section — outside grid */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.4 }}
+                    className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-5 border-t border-[var(--border-subtle)]"
+                  >
+                    <div className="text-center sm:text-left">
+                      <p className="text-foreground/50 text-sm">
+                        {approvedGifts.size > 0
+                          ? `${approvedGifts.size} gift${approvedGifts.size > 1 ? "s" : ""} selected`
+                          : "Tap the + to select a gift"}
+                      </p>
+                      <p className="text-foreground/25 text-xs mt-0.5">
+                        You pay for gift + delivery only
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setStep("plan")}
+                      disabled={approvedGifts.size === 0}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      Continue
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </motion.div>
+
+                  {/* ─── Product Detail Drawer ─── */}
+                  <AnimatePresence>
+                    {viewingGift !== null && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+                        onClick={() => setViewingGift(null)}
+                      >
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+                        <motion.div
+                          initial={{ y: "100%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: "100%", opacity: 0 }}
+                          transition={{
+                            type: "spring",
+                            damping: 30,
+                            stiffness: 300,
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="relative w-full sm:max-w-md bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl ring-1 ring-[var(--border-default)] max-h-[85vh] overflow-y-auto"
+                        >
+                          {/* Close button */}
+                          <button
+                            onClick={() => setViewingGift(null)}
+                            className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-foreground/10 transition-colors cursor-pointer"
+                          >
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-foreground/50"
+                            >
+                              <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                          </button>
+
+                          {/* Product image — click for fullscreen */}
+                          <div
+                            onClick={() =>
+                              setLightboxImage(giftResults[viewingGift].image)
+                            }
+                            className="relative aspect-square bg-secondary rounded-t-3xl sm:rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
+                          >
+                            <img
+                              src={giftResults[viewingGift].image}
+                              alt={giftResults[viewingGift].name}
+                              className="w-full h-full object-contain drop-shadow-xl"
+                            />
+                            <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                              </svg>
+                              Expand
+                            </div>
+                          </div>
+
+                          {/* Product info */}
+                          <div className="p-6">
+                            <div className="flex items-start justify-between gap-3 mb-1">
+                              <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#5170ff] bg-[#5170ff]/8 px-2.5 py-1 rounded-full">
+                                {giftResults[viewingGift].tag}
+                              </span>
+                              <span className="text-xl font-bold tracking-tight">
+                                {giftResults[viewingGift].price}
+                              </span>
+                            </div>
+                            <h4 className="text-lg font-semibold tracking-tight mt-3 mb-2">
+                              {giftResults[viewingGift].name}
+                            </h4>
+                            <p className="text-foreground/45 text-sm leading-relaxed mb-6">
+                              {giftResults[viewingGift].desc}
+                            </p>
+
+                            <button
+                              onClick={() => {
+                                handleApprove(viewingGift);
+                                setViewingGift(null);
+                              }}
+                              className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 cursor-pointer ${
+                                approvedGifts.has(viewingGift)
+                                  ? "bg-secondary text-foreground/60 hover:bg-foreground/10"
+                                  : "cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40"
+                              }`}
+                            >
+                              {approvedGifts.has(viewingGift)
+                                ? "Remove selection"
+                                : "Select this gift"}
+                            </button>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* ─── Image Lightbox ─── */}
+                  <AnimatePresence>
+                    {lightboxImage && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 z-[60] flex items-center justify-center cursor-zoom-out"
+                        onClick={() => setLightboxImage(null)}
+                      >
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+                        <motion.img
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.8, opacity: 0 }}
+                          transition={{
+                            type: "spring",
+                            damping: 25,
+                            stiffness: 250,
+                          }}
+                          src={lightboxImage}
+                          alt=""
+                          className="relative max-w-[90vw] max-h-[90vh] object-contain drop-shadow-2xl"
+                        />
+                        <button
+                          onClick={() => setLightboxImage(null)}
+                          className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M18 6L6 18M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
 
@@ -737,6 +1150,7 @@ export default function GiftQuiz() {
                   giftResults={giftResults}
                   dateLabel={dateLabel}
                   onChangeGift={() => setStep("results")}
+                  promo={promo}
                 />
               )}
             </AnimatePresence>

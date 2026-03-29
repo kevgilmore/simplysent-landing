@@ -7,6 +7,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
     base: "/",
     plugins: [react(), tailwindcss()],
+    server: {
+        allowedHosts: ["abby-superinclusive-tyesha.ngrok-free.dev"],
+    },
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
