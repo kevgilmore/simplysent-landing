@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { usePromo } from "@/hooks/usePromo";
 
 type Step =
   | "recipient"
@@ -9,7 +8,16 @@ type Step =
   | "date"
   | "preparing"
   | "results"
+  | "delivery"
+  | "address"
   | "plan";
+
+interface Address {
+  line1: string;
+  line2: string;
+  city: string;
+  postcode: string;
+}
 
 const recipients = [
   { id: "mum", label: "Mum", emoji: "👩‍🦱" },
@@ -131,13 +139,12 @@ function StepDots({ current, total }: { current: number; total: number }) {
   );
 }
 
-/* ─── Plan step ─── */
-function PlanStep({
+/* ─── Review step ─── */
+function ReviewStep({
   approvedGifts,
   giftResults,
   dateLabel,
   onChangeGift,
-  promo,
 }: {
   approvedGifts: Set<number>;
   giftResults: {
@@ -149,7 +156,6 @@ function PlanStep({
   }[];
   dateLabel: string;
   onChangeGift: () => void;
-  promo: { code: string; label: string } | null;
 }) {
   const chosenIndex = [...approvedGifts][0] ?? 0;
   const chosen = giftResults[chosenIndex];
@@ -162,6 +168,13 @@ function PlanStep({
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.35 }}
     >
+      <p className="text-lg font-semibold tracking-tight text-center mb-1">
+        Review your order
+      </p>
+      <p className="text-sm text-foreground/40 text-center mb-5">
+        Here's what you're getting
+      </p>
+
       {/* ── Two cards ── */}
       <div className="grid grid-cols-2 gap-3 mb-5">
         {/* This year */}
@@ -228,130 +241,59 @@ function PlanStep({
         </div>
       </div>
 
-      {/* ── Subscription CTA ── */}
-      <div className="relative rounded-2xl overflow-hidden">
+      {/* ── What's included ── */}
+      <div className="relative rounded-2xl overflow-hidden mb-5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#5170ff]/[0.06] via-[#8b5cf6]/[0.03] to-[#ff66c4]/[0.04] dark:from-[#5170ff]/[0.12] dark:via-[#8b5cf6]/[0.06] dark:to-[#ff66c4]/[0.08]" />
         <div className="absolute inset-0 ring-1 ring-[#5170ff]/10 dark:ring-[#5170ff]/20 rounded-2xl" />
-        <div className="pointer-events-none absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#5170ff]/8 to-transparent blur-2xl" />
-        <div className="pointer-events-none absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#ff66c4]/5 to-transparent blur-xl" />
-
-        <div className="relative p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-            {/* Left — pricing */}
-            <div className="flex-1 min-w-0">
-              <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-2">
-                SimplySent subscription
-              </p>
-              {promo && (
-                <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#5170ff]/10 to-[#ff66c4]/10 text-[#5170ff] text-xs font-semibold px-3 py-1 rounded-full mb-2">
-                  🎉 {promo.label}
-                </div>
-              )}
-              <div className="flex items-baseline gap-1.5 mb-1">
-                {promo?.code === "EARLYBIRD" ? (
-                  <>
-                    <span className="text-lg text-foreground/30 line-through">
-                      £29
-                    </span>
-                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                      £19
-                    </span>
-                  </>
-                ) : promo?.code === "META_ONE" ? (
-                  <>
-                    <span className="text-lg text-foreground/30 line-through">
-                      £29
-                    </span>
-                    <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                      £0
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-                    £29
-                  </span>
-                )}
-                <span className="text-sm text-foreground/30">
-                  {promo?.code === "META_ONE" ? "/first year" : "/year"}
-                </span>
-                <span className="text-sm text-foreground/40 ml-1">
-                  · For all the family
-                </span>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-4 gap-y-1 text-[0.7rem] text-foreground/35 mt-2">
-                <span className="flex items-center gap-1.5">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#5170ff"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Expertly chosen gifts just for them
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#5170ff"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Beautifully gift wrapped
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#5170ff"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Easy tracking
-                </span>
-              </div>
-            </div>
-
-            {/* Right — CTA */}
-            <div className="shrink-0 flex flex-col items-center gap-2">
-              <a
-                href="https://app.simplysent.co"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/20 hover:shadow-[#5170ff]/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
-              >
-                Set up my gifting
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
-              <p className="text-[0.7rem] text-foreground/20 text-center">
-                Gifts are charged separately when <br /> you approve them
-              </p>
-            </div>
+        <div className="pointer-events-none absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#5170ff]/8 to-transparent blur-2xl" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#ff66c4]/5 to-transparent blur-xl" />
+        <div className="relative p-4 sm:p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#5170ff] mb-3">
+            Included with SimplySent
+          </p>
+          <div className="flex flex-col gap-2.5 text-sm text-foreground/60">
+            <span className="flex items-center gap-2.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Expertly chosen gifts just for them
+            </span>
+            <span className="flex items-center gap-2.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Beautifully gift wrapped
+            </span>
+            <span className="flex items-center gap-2.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Easy delivery tracking
+            </span>
           </div>
+        </div>
+      </div>
+
+      {/* ── Price + Actions ── */}
+      <div className="flex items-center justify-end">
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <p className="text-lg font-bold tracking-tight text-foreground">
+              {chosen.price}
+            </p>
+            <p className="text-[0.65rem] text-foreground/30">
+              incl. delivery
+            </p>
+          </div>
+          <a
+            href="https://app.simplysent.co"
+            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/20 hover:shadow-[#5170ff]/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
+          >
+            Checkout
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
         </div>
       </div>
     </motion.div>
@@ -359,7 +301,6 @@ function PlanStep({
 }
 
 export default function GiftQuiz() {
-  const promo = usePromo();
   const [step, setStep] = useState<Step>("recipient");
   const [selectedRecipient, setSelectedRecipient] = useState<string | null>(
     null,
@@ -369,10 +310,22 @@ export default function GiftQuiz() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
+  const [deliveryOption, setDeliveryOption] = useState<"direct" | "me" | null>(null);
+  const [address, setAddress] = useState<Address>({ line1: "", line2: "", city: "", postcode: "" });
+  const [addressQuery, setAddressQuery] = useState("");
+  const [addressSuggestions, setAddressSuggestions] = useState<{ id: string; suggestion: string; udprn: number }[]>([]);
+  const [addressLoading, setAddressLoading] = useState(false);
   const [viewingGift, setViewingGift] = useState<number | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const ref = useRef(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  useEffect(() => {
+    if (step !== "recipient") {
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [step]);
 
   const handleRecipientSelect = (id: string) => {
     setSelectedRecipient(id);
@@ -415,6 +368,61 @@ export default function GiftQuiz() {
     return () => clearTimeout(timer);
   }, [step]);
 
+  const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleAddressSearch = (query: string) => {
+    setAddressQuery(query);
+    setAddress({ line1: "", line2: "", city: "", postcode: "" });
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    if (query.trim().length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+    addressDebounceRef.current = setTimeout(async () => {
+      setAddressLoading(true);
+      try {
+        const res = await fetch(
+          `https://api.ideal-postcodes.co.uk/v1/autocomplete/addresses?api_key=ak_mndm4cre3G3LcdbX26l53zyr585Va&q=${encodeURIComponent(query.trim())}`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        setAddressSuggestions(
+          data.result.hits.map((h: { id: string; suggestion: string; udprn: number }) => ({
+            id: h.id,
+            suggestion: h.suggestion,
+            udprn: h.udprn,
+          }))
+        );
+      } catch {
+        // silently fail
+      } finally {
+        setAddressLoading(false);
+      }
+    }, 300);
+  };
+
+  const handleAddressSelect = async (udprn: number) => {
+    setAddressSuggestions([]);
+    try {
+      const res = await fetch(
+        `https://api.ideal-postcodes.co.uk/v1/udprn/${udprn}?api_key=ak_mndm4cre3G3LcdbX26l53zyr585Va`
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      const r = data.result;
+      setAddress({
+        line1: [r.building_number, r.thoroughfare].filter(Boolean).join(" ") || r.building_name || "",
+        line2: r.dependant_locality || "",
+        city: r.post_town || "",
+        postcode: r.postcode || "",
+      });
+      setAddressQuery(
+        [r.building_number, r.thoroughfare, r.post_town, r.postcode].filter(Boolean).join(", ")
+      );
+    } catch {
+      // silently fail
+    }
+  };
+
   const handleApprove = (index: number) => {
     setApprovedGifts((prev) => {
       const next = new Set(prev);
@@ -450,6 +458,8 @@ export default function GiftQuiz() {
     "date",
     "preparing",
     "results",
+    "delivery",
+    "address",
     "plan",
   ];
   const stepIndex = stepOrder.indexOf(step);
@@ -493,10 +503,11 @@ export default function GiftQuiz() {
 
         {/* Interactive card */}
         <motion.div
+          ref={cardRef}
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2, duration: 0.7 }}
-          className="relative rounded-3xl bg-card shadow-sm ring-1 ring-[var(--border-default)] overflow-hidden"
+          className="relative rounded-3xl bg-card shadow-sm ring-1 ring-[var(--border-default)] overflow-hidden scroll-mt-6"
         >
           {/* Progress bar */}
           <div className="h-1 bg-secondary">
@@ -959,12 +970,9 @@ export default function GiftQuiz() {
                           ? `${approvedGifts.size} gift${approvedGifts.size > 1 ? "s" : ""} selected`
                           : "Tap the + to select a gift"}
                       </p>
-                      <p className="text-foreground/25 text-xs mt-0.5">
-                        You pay for gift + delivery only
-                      </p>
                     </div>
                     <button
-                      onClick={() => setStep("plan")}
+                      onClick={() => setStep("delivery")}
                       disabled={approvedGifts.size === 0}
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                     >
@@ -1143,14 +1151,187 @@ export default function GiftQuiz() {
                 </motion.div>
               )}
 
-              {/* ─── Step 6: Plan — summary + pricing ─── */}
+              {/* ─── Step 6: Delivery option ─── */}
+              {step === "delivery" && (
+                <motion.div
+                  key="delivery"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <p className="text-lg font-semibold tracking-tight text-center mb-1">
+                    How should we deliver it?
+                  </p>
+                  <p className="text-sm text-foreground/40 text-center mb-5">
+                    Choose where we send the gift
+                  </p>
+
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => setDeliveryOption("direct")}
+                      className={`relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer text-left ${
+                        deliveryOption === "direct"
+                          ? "border-[#5170ff] bg-[#5170ff]/[0.04]"
+                          : "border-[var(--border-default)] hover:border-foreground/20"
+                      }`}
+                    >
+                      <span className="text-2xl">📬</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm">Send direct to them</p>
+                        <p className="text-xs text-foreground/40 mt-0.5">
+                          We'll deliver straight to their door
+                        </p>
+                      </div>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                          deliveryOption === "direct"
+                            ? "border-[#5170ff] bg-[#5170ff]"
+                            : "border-foreground/20"
+                        }`}
+                      >
+                        {deliveryOption === "direct" && (
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => setDeliveryOption("me")}
+                      className={`relative flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer text-left ${
+                        deliveryOption === "me"
+                          ? "border-[#5170ff] bg-[#5170ff]/[0.04]"
+                          : "border-[var(--border-default)] hover:border-foreground/20"
+                      }`}
+                    >
+                      <span className="text-2xl">🏠</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm">Send to me</p>
+                        <p className="text-xs text-foreground/40 mt-0.5">
+                          I'll give it to them myself
+                        </p>
+                      </div>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                          deliveryOption === "me"
+                            ? "border-[#5170ff] bg-[#5170ff]"
+                            : "border-foreground/20"
+                        }`}
+                      >
+                        {deliveryOption === "me" && (
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      onClick={() => setStep("address")}
+                      disabled={deliveryOption === null}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      Continue
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ─── Step 7: Address ─── */}
+              {step === "address" && (
+                <motion.div
+                  key="address"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <p className="text-lg font-semibold tracking-tight text-center mb-1">
+                    {deliveryOption === "direct" ? "Their delivery address" : "Your delivery address"}
+                  </p>
+                  <p className="text-sm text-foreground/40 text-center mb-5">
+                    Start typing to find the address
+                  </p>
+
+                  {/* Address search */}
+                  <div className="relative mb-4">
+                    <input
+                      type="text"
+                      value={addressQuery}
+                      onChange={(e) => handleAddressSearch(e.target.value)}
+                      placeholder="Start typing an address or postcode..."
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border-default)] bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-[#5170ff]/30 focus:border-[#5170ff]/50 transition-all placeholder:text-foreground/25"
+                    />
+                    {addressLoading && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div className="w-4 h-4 border-2 border-[#5170ff]/30 border-t-[#5170ff] rounded-full animate-spin" />
+                      </div>
+                    )}
+
+                    {/* Suggestions dropdown */}
+                    {addressSuggestions.length > 0 && (
+                      <div className="absolute z-20 left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-xl border border-[var(--border-default)] bg-card shadow-lg">
+                        {addressSuggestions.map((s) => (
+                          <button
+                            key={s.id}
+                            onClick={() => handleAddressSelect(s.udprn)}
+                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-[#5170ff]/[0.06] transition-colors cursor-pointer border-b border-[var(--border-default)] last:border-b-0"
+                          >
+                            {s.suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selected address preview */}
+                  {address.line1 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="rounded-xl bg-secondary p-4 mb-4"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-widest text-foreground/30 mb-2">
+                        Delivering to
+                      </p>
+                      <p className="text-sm text-foreground/70">
+                        {[address.line1, address.line2, address.city, address.postcode]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    </motion.div>
+                  )}
+
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      onClick={() => setStep("plan")}
+                      disabled={!address.line1 || !address.city || !address.postcode}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      Continue
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ─── Step 8: Review ─── */}
               {step === "plan" && (
-                <PlanStep
+                <ReviewStep
                   approvedGifts={approvedGifts}
                   giftResults={giftResults}
                   dateLabel={dateLabel}
                   onChangeGift={() => setStep("results")}
-                  promo={promo}
                 />
               )}
             </AnimatePresence>
