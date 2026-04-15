@@ -73,7 +73,7 @@ const monthFull = [
   "December",
 ];
 
-const giftResults = [
+const FALLBACK_GIFTS = [
   {
     name: "Ninja Foodi Blender",
     price: "£89",
@@ -111,6 +111,20 @@ const giftResults = [
   },
 ];
 
+const GIFT_TAGS = ["Top Pick", "Premium", "Best Value", "Trending", "Fan Favourite"];
+const API_BASE = import.meta.env.VITE_API_URL || "https://simplysent-api-973409790816.europe-west1.run.app";
+
+function deriveSlug(recipient: string, occasion: string, gender: string | null): string {
+  if (occasion === "mothersday") return "mum-mothers-day";
+  if (occasion === "fathersday") return "dad-fathers-day";
+  if (recipient === "partner" || recipient === "other") return `${recipient}-${gender}-birthday`;
+  return `${recipient}-birthday`;
+}
+
+function formatPrice(p: number): string {
+  return `£${Number.isInteger(p) ? p : p.toFixed(2)}`;
+}
+
 function getNextOccurrence(month: number, day: number): string {
   const now = new Date();
   let year = now.getFullYear();
@@ -145,20 +159,77 @@ function ReviewStep({
   giftResults,
   dateLabel,
   onChangeGift,
+  occasionLabel,
+  recipientLabel,
+  gender,
 }: {
   approvedGifts: Set<number>;
   giftResults: {
     name: string;
     price: string;
+    priceNumeric?: number;
+    id?: string;
+    productUrl?: string;
     image: string;
+    processed_product_photo?: string;
     tag: string;
     desc: string;
   }[];
   dateLabel: string;
   onChangeGift: () => void;
+  occasionLabel: string;
+  recipientLabel: string;
+  gender: string | null;
 }) {
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
   const chosenIndex = [...approvedGifts][0] ?? 0;
   const chosen = giftResults[chosenIndex];
+
+  const nextYearGifts = [
+    giftResults[(chosenIndex + 1) % giftResults.length],
+    giftResults[(chosenIndex + 2) % giftResults.length],
+    giftResults[(chosenIndex + 3) % giftResults.length],
+  ];
+
+  const sectionLabel = "text-[0.6rem] font-bold uppercase tracking-widest text-[#5170ff] mb-3";
+
+  const handleCheckout = async () => {
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      const res = await fetch(`${API_BASE}/create-checkout-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName: chosen.name,
+          productPrice: chosen.priceNumeric ?? 0,
+          productId: chosen.id ?? undefined,
+          productUrl: chosen.productUrl ?? undefined,
+          subscriptionPrice: 4.99,
+          occasionName: occasionLabel,
+          recipient: {
+            name: "",
+            relationship: recipientLabel,
+            gender: gender || "",
+            dob: "",
+            interests: [],
+            budgetMin: 0,
+            budgetMax: 0,
+          },
+          giftCategories: [],
+          successUrl: "https://app.simplysent.co/onboarding/confirmation",
+        }),
+      });
+      if (!res.ok) throw new Error("Could not create checkout session");
+      const data = await res.json();
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("Something went wrong. Please try again.");
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -167,135 +238,109 @@ function ReviewStep({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.35 }}
+      className="flex flex-col gap-3"
     >
-      <p className="text-lg font-semibold tracking-tight text-center mb-1">
-        Review your order
-      </p>
-      <p className="text-sm text-foreground/40 text-center mb-5">
-        Here's what you're getting
-      </p>
-
-      {/* ── Two cards ── */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        {/* This year */}
-        <div className="rounded-2xl bg-secondary p-4 sm:p-5 text-center">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#5170ff] mb-3">
-            This year
-          </p>
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-xl bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-2 mb-2">
-            <img
-              src={chosen.image}
-              alt={chosen.name}
-              className="w-full h-full object-contain"
-            />
+      {/* ── This year ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.06, duration: 0.4 }}
+        className="rounded-2xl bg-secondary ring-1 ring-[var(--border-default)] p-4"
+      >
+        <p className={sectionLabel}>This year</p>
+        <div className="flex gap-3 items-center">
+          <div className="w-20 h-20 shrink-0 rounded-xl bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-2 overflow-hidden">
+            <img src={chosen.image} alt={chosen.name} className="w-full h-full object-contain" />
           </div>
-          <p className="font-semibold text-xs sm:text-sm tracking-tight truncate">
-            {chosen.name}
-          </p>
-          <p className="text-foreground/30 text-[0.7rem] mt-0.5">
-            Delivered by {dateLabel}
-          </p>
-          <button
-            onClick={onChangeGift}
-            className="text-[0.7rem] text-[#5170ff] cursor-pointer mt-1.5"
-          >
-            Change
-          </button>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">{chosen.name}</p>
+            <p className="text-xl font-bold tracking-tight mt-1">{chosen.price}</p>
+            <p className="text-xs text-foreground/35">incl. delivery</p>
+            <div className="flex items-center gap-1.5 mt-2">
+              <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <p className="text-xs text-foreground/55">Arrives by <span className="font-semibold text-foreground/80">{dateLabel}</span></p>
+            </div>
+            <button onClick={onChangeGift} className="text-xs text-[#5170ff] cursor-pointer hover:underline mt-1.5 block">
+              Change gift
+            </button>
+          </div>
         </div>
+        <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[var(--border-subtle)]">
+          {[{ emoji: "🎁", label: "Gift wrapped" }, { emoji: "📦", label: "Tracked delivery" }].map(({ emoji, label }) => (
+            <div key={label} className="flex items-center gap-1.5">
+              <span className="text-xs leading-none">{emoji}</span>
+              <span className="text-xs text-foreground/40">{label}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
-        {/* Every year after */}
-        <div className="relative rounded-2xl bg-secondary p-4 sm:p-5 text-center overflow-hidden">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-foreground/25 mb-3">
-            Every year after
-          </p>
-          <div className="flex items-center justify-center gap-0.5 mb-2">
-            {[
-              giftResults[(chosenIndex + 1) % 5],
-              giftResults[(chosenIndex + 2) % 5],
-              giftResults[(chosenIndex + 3) % 5],
-            ].map((g, i) => (
+      {/* ── Every year after ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18, duration: 0.4 }}
+        className="rounded-2xl border border-dashed border-[var(--border-default)] bg-secondary/40 p-4"
+      >
+        <p className={sectionLabel}>Every year after</p>
+        <div className="flex gap-3 items-center">
+          <div className="relative shrink-0" style={{ width: `${52 + 2 * 20}px`, height: "52px" }}>
+            {nextYearGifts.map((g, i) => (
               <div
                 key={i}
-                className={`rounded-lg bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-1 ${i === 1 ? "w-12 h-12 sm:w-14 sm:h-14 -mx-0.5 z-10 shadow-sm" : "w-9 h-9 sm:w-10 sm:h-10 opacity-50"}`}
+                className="absolute top-0 w-[52px] h-[52px] rounded-xl bg-card ring-2 ring-[var(--border-default)] flex items-center justify-center p-1.5"
+                style={{ left: `${i * 20}px`, zIndex: 3 - i }}
               >
-                <img
-                  src={g.image}
-                  alt=""
-                  className="w-full h-full object-contain"
-                />
+                <img src={g.processed_product_photo || g.image} alt="" className="w-full h-full object-contain" />
               </div>
             ))}
           </div>
-          <p className="font-semibold text-xs sm:text-sm tracking-tight">
-            Fresh picks, one tap
-          </p>
-          <p className="text-foreground/30 text-[0.7rem] mt-0.5">
-            We remind you. You approve.
-          </p>
-          <a
-            href="#app-preview"
-            className="text-[0.7rem] text-[#5170ff] mt-1.5 inline-block"
-          >
-            See how it works
-          </a>
-        </div>
-      </div>
-
-      {/* ── What's included ── */}
-      <div className="relative rounded-2xl overflow-hidden mb-5">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#5170ff]/[0.06] via-[#8b5cf6]/[0.03] to-[#ff66c4]/[0.04] dark:from-[#5170ff]/[0.12] dark:via-[#8b5cf6]/[0.06] dark:to-[#ff66c4]/[0.08]" />
-        <div className="absolute inset-0 ring-1 ring-[#5170ff]/10 dark:ring-[#5170ff]/20 rounded-2xl" />
-        <div className="pointer-events-none absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#5170ff]/8 to-transparent blur-2xl" />
-        <div className="pointer-events-none absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#ff66c4]/5 to-transparent blur-xl" />
-        <div className="relative p-4 sm:p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#5170ff] mb-3">
-            Included with SimplySent
-          </p>
-          <div className="flex flex-col gap-2.5 text-sm text-foreground/60">
-            <span className="flex items-center gap-2.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Expertly chosen gifts just for them
-            </span>
-            <span className="flex items-center gap-2.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Beautifully gift wrapped
-            </span>
-            <span className="flex items-center gap-2.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5170ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Easy delivery tracking
-            </span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground/80">Fresh picks, every year</p>
+            <p className="text-xs text-foreground/45 mt-1 leading-relaxed">We suggest a new gift. You approve with one tap.</p>
+            <a href="#app-preview" className="text-xs text-[#5170ff] hover:underline mt-1.5 inline-block">See how it works →</a>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* ── Price + Actions ── */}
-      <div className="flex items-center justify-end">
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <p className="text-lg font-bold tracking-tight text-foreground">
-              {chosen.price}
-            </p>
-            <p className="text-[0.65rem] text-foreground/30">
-              incl. delivery
-            </p>
-          </div>
-          <a
-            href="https://app.simplysent.co"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/20 hover:shadow-[#5170ff]/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 whitespace-nowrap"
-          >
-            Checkout
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
-      </div>
+      {/* ── CTA ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.28, duration: 0.4 }}
+      >
+        <button
+          disabled={checkoutLoading}
+          onClick={handleCheckout}
+          className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-bold text-lg cta-gradient text-white shadow-xl shadow-[#5170ff]/20 hover:shadow-[#5170ff]/35 hover:scale-[1.012] active:scale-[0.988] transition-all duration-300 disabled:opacity-70 disabled:pointer-events-none"
+        >
+          {checkoutLoading ? (
+            <>
+              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+              </svg>
+              Redirecting to checkout…
+            </>
+          ) : (
+            <>
+              Checkout — {chosen.price}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </>
+          )}
+        </button>
+        {checkoutError && (
+          <p className="text-center text-xs text-red-400 mt-2">{checkoutError}</p>
+        )}
+        <p className="text-center text-[0.7rem] text-foreground/25 mt-3">
+          Secure Stripe checkout · £4.99/yr subscription + gift at dispatch
+        </p>
+      </motion.div>
     </motion.div>
   );
 }
@@ -309,6 +354,8 @@ export default function GiftQuiz() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
+  const [quizProducts, setQuizProducts] = useState<Array<{ name: string; price: string; priceNumeric?: number; id?: string; productUrl?: string; tag: string; image: string; original_image?: string; processed_product_photo?: string; desc: string }>>(FALLBACK_GIFTS);
+  const [showOriginal, setShowOriginal] = useState(false);
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
   const [deliveryOption, setDeliveryOption] = useState<"direct" | "me" | null>(null);
   const [address, setAddress] = useState<Address>({ line1: "", line2: "", city: "", postcode: "" });
@@ -361,10 +408,34 @@ export default function GiftQuiz() {
     setStep("preparing");
   }, [selectedMonth, selectedDay]);
 
-  // Auto-advance from preparing → results
+  // Auto-advance from preparing → results, and fetch gift guide
   useEffect(() => {
     if (step !== "preparing") return;
     const timer = setTimeout(() => setStep("results"), 2400);
+
+    const slug = deriveSlug(selectedRecipient!, selectedOccasion!, selectedGender);
+    fetch(`${API_BASE}/curate/guide/${slug}/products`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.products?.length) {
+          setQuizProducts(
+            data.products.map((p: { id: string; name: string; price: number; image: string; original_image: string; processed_product_photo: string; description: string; product_url?: string }, i: number) => ({
+              id: p.id,
+              name: p.name,
+              price: formatPrice(p.price),
+              priceNumeric: p.price,
+              productUrl: p.product_url,
+              tag: GIFT_TAGS[i] ?? "Pick",
+              image: p.image,
+              original_image: p.original_image,
+              processed_product_photo: p.processed_product_photo,
+              desc: p.description,
+            }))
+          );
+        }
+      })
+      .catch(() => { /* keep fallback */ });
+
     return () => clearTimeout(timer);
   }, [step]);
 
@@ -440,6 +511,8 @@ export default function GiftQuiz() {
     setSelectedMonth(null);
     setSelectedDay(null);
     setApprovedGifts(new Set());
+    setQuizProducts(FALLBACK_GIFTS);
+    setShowOriginal(false);
   };
 
   const recipientLabel =
@@ -507,15 +580,17 @@ export default function GiftQuiz() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2, duration: 0.7 }}
-          className="relative rounded-3xl bg-card shadow-sm ring-1 ring-[var(--border-default)] overflow-hidden scroll-mt-6"
+          className="relative rounded-3xl bg-card shadow-sm ring-1 ring-[var(--border-default)] scroll-mt-6"
         >
-          {/* Progress bar */}
-          <div className="h-1 bg-secondary">
-            <motion.div
-              className="h-full bg-gradient-to-r from-[#5170ff] to-[#ff66c4]"
-              animate={{ width: progressWidth }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            />
+          {/* Progress bar — needs own overflow clip for rounded top corners */}
+          <div className="overflow-hidden rounded-t-3xl">
+            <div className="h-1 bg-secondary">
+              <motion.div
+                className="h-full bg-gradient-to-r from-[#5170ff] to-[#ff66c4]"
+                animate={{ width: progressWidth }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
+            </div>
           </div>
 
           <div className="p-6 sm:p-8 md:p-12">
@@ -848,9 +923,19 @@ export default function GiftQuiz() {
                   transition={{ duration: 0.35 }}
                 >
                   <div className="mb-6">
-                    <h3 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-                      Choose a gift for {recipientLabel}
-                    </h3>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
+                        Choose a gift for {recipientLabel}
+                      </h3>
+                      {quizProducts.some((g) => g.original_image && g.original_image !== g.image) && (
+                        <button
+                          onClick={() => setShowOriginal((v) => !v)}
+                          className="shrink-0 text-[0.65rem] font-medium px-2.5 py-1 rounded-full bg-secondary ring-1 ring-[var(--border-default)] text-foreground/50 hover:text-foreground/80 transition-colors cursor-pointer"
+                        >
+                          {showOriginal ? "original" : "processed"}
+                        </button>
+                      )}
+                    </div>
                     <p className="text-foreground/40 text-sm leading-relaxed">
                       {recipientLabel}'s {occasionLabel.toLowerCase()} is on{" "}
                       <span className="text-foreground/60 font-medium">
@@ -862,18 +947,14 @@ export default function GiftQuiz() {
 
                   {/* Gift cards */}
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                    {giftResults.map((gift, i) => {
+                    {quizProducts.map((gift, i) => {
                       const isApproved = approvedGifts.has(i);
                       return (
                         <motion.div
                           key={gift.name}
                           initial={{ opacity: 0, y: 15 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            delay: i * 0.06,
-                            duration: 0.4,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
+                          transition={{ delay: i * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                           className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
                             isApproved
                               ? "border-[#5170ff]/40 ring-1 ring-[#5170ff]/20"
@@ -888,10 +969,7 @@ export default function GiftQuiz() {
 
                           {/* Select checkbox */}
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleApprove(i);
-                            }}
+                            onClick={(e) => { e.stopPropagation(); handleApprove(i); }}
                             className={`absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
                               isApproved
                                 ? "cta-gradient shadow-lg shadow-[#5170ff]/40"
@@ -899,44 +977,25 @@ export default function GiftQuiz() {
                             }`}
                           >
                             {isApproved ? (
-                              <svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="20 6 9 17 4 12" />
                               </svg>
                             ) : (
-                              <svg
-                                width="10"
-                                height="10"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="text-foreground/25"
-                              >
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/25">
                                 <path d="M12 5v14M5 12h14" />
                               </svg>
                             )}
                           </button>
 
-                          {/* Image — click to open product detail */}
+                          {/* Image */}
                           <div
                             onClick={() => setViewingGift(i)}
                             className="relative aspect-square bg-secondary flex items-center justify-center p-5 sm:p-6 cursor-pointer"
                           >
                             <img
-                              src={gift.image}
+                              src={showOriginal ? (gift.original_image || gift.image) : gift.image}
                               alt={gift.name}
-                              className="w-full h-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-500 rounded-xl"
                               loading="lazy"
                             />
                           </div>
@@ -945,12 +1004,8 @@ export default function GiftQuiz() {
                             onClick={() => setViewingGift(i)}
                             className="px-3.5 py-3 border-t border-[var(--border-subtle)] cursor-pointer"
                           >
-                            <p className="font-medium text-sm sm:text-base truncate">
-                              {gift.name}
-                            </p>
-                            <p className="text-foreground/40 text-sm mt-0.5">
-                              {gift.price}
-                            </p>
+                            <p className="font-medium text-sm sm:text-base truncate">{gift.name}</p>
+                            <p className="text-foreground/40 text-sm mt-0.5">{gift.price}</p>
                           </div>
                         </motion.div>
                       );
@@ -1039,13 +1094,13 @@ export default function GiftQuiz() {
                           {/* Product image — click for fullscreen */}
                           <div
                             onClick={() =>
-                              setLightboxImage(giftResults[viewingGift].image)
+                              setLightboxImage(quizProducts[viewingGift].image)
                             }
                             className="relative aspect-square bg-secondary rounded-t-3xl sm:rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
                           >
                             <img
-                              src={giftResults[viewingGift].image}
-                              alt={giftResults[viewingGift].name}
+                              src={quizProducts[viewingGift].image}
+                              alt={quizProducts[viewingGift].name}
                               className="w-full h-full object-contain drop-shadow-xl"
                             />
                             <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
@@ -1069,17 +1124,17 @@ export default function GiftQuiz() {
                           <div className="p-6">
                             <div className="flex items-start justify-between gap-3 mb-1">
                               <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#5170ff] bg-[#5170ff]/8 px-2.5 py-1 rounded-full">
-                                {giftResults[viewingGift].tag}
+                                {quizProducts[viewingGift].tag}
                               </span>
                               <span className="text-xl font-bold tracking-tight">
-                                {giftResults[viewingGift].price}
+                                {quizProducts[viewingGift].price}
                               </span>
                             </div>
                             <h4 className="text-lg font-semibold tracking-tight mt-3 mb-2">
-                              {giftResults[viewingGift].name}
+                              {quizProducts[viewingGift].name}
                             </h4>
                             <p className="text-foreground/45 text-sm leading-relaxed mb-6">
-                              {giftResults[viewingGift].desc}
+                              {quizProducts[viewingGift].desc}
                             </p>
 
                             <button
@@ -1310,7 +1365,7 @@ export default function GiftQuiz() {
                     </motion.div>
                   )}
 
-                  <div className="mt-6 flex justify-center">
+                  <div className="mt-6 flex items-center justify-center gap-4">
                     <button
                       onClick={() => setStep("plan")}
                       disabled={!address.line1 || !address.city || !address.postcode}
@@ -1321,6 +1376,12 @@ export default function GiftQuiz() {
                         <path d="M5 12h14M12 5l7 7-7 7" />
                       </svg>
                     </button>
+                    <button
+                      onClick={() => setStep("plan")}
+                      className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors cursor-pointer"
+                    >
+                      Skip
+                    </button>
                   </div>
                 </motion.div>
               )}
@@ -1329,9 +1390,12 @@ export default function GiftQuiz() {
               {step === "plan" && (
                 <ReviewStep
                   approvedGifts={approvedGifts}
-                  giftResults={giftResults}
+                  giftResults={quizProducts}
                   dateLabel={dateLabel}
                   onChangeGift={() => setStep("results")}
+                  occasionLabel={occasionLabel}
+                  recipientLabel={recipientLabel}
+                  gender={selectedGender}
                 />
               )}
             </AnimatePresence>
