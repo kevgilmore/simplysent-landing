@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 
 type Step =
@@ -112,7 +113,10 @@ const FALLBACK_GIFTS = [
 ];
 
 const GIFT_TAGS = ["Top Pick", "Premium", "Best Value", "Trending", "Fan Favourite"];
-const API_BASE = import.meta.env.VITE_API_URL || "https://simplysent-api-973409790816.europe-west1.run.app";
+const PROD_API = "https://simplysent-api-973409790816.europe-west1.run.app";
+const API_BASE = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
+  ? (import.meta.env.VITE_API_URL || "http://localhost:8080")
+  : PROD_API;
 
 function deriveSlug(recipient: string, occasion: string, gender: string | null): string {
   if (occasion === "mothersday") return "mum-mothers-day";
@@ -162,6 +166,7 @@ function ReviewStep({
   occasionLabel,
   recipientLabel,
   gender,
+  selectedRecipient,
 }: {
   approvedGifts: Set<number>;
   giftResults: {
@@ -171,6 +176,7 @@ function ReviewStep({
     id?: string;
     productUrl?: string;
     image: string;
+    product_photo?: string;
     processed_product_photo?: string;
     tag: string;
     desc: string;
@@ -180,6 +186,7 @@ function ReviewStep({
   occasionLabel: string;
   recipientLabel: string;
   gender: string | null;
+  selectedRecipient: string | null;
 }) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -207,7 +214,6 @@ function ReviewStep({
           productPrice: chosen.priceNumeric ?? 0,
           productId: chosen.id ?? undefined,
           productUrl: chosen.productUrl ?? undefined,
-          subscriptionPrice: 4.99,
           occasionName: occasionLabel,
           recipient: {
             name: "",
@@ -219,6 +225,7 @@ function ReviewStep({
             budgetMax: 0,
           },
           giftCategories: [],
+          productOnly: true,
           successUrl: "https://app.simplysent.co/onboarding/confirmation",
         }),
       });
@@ -250,7 +257,7 @@ function ReviewStep({
         <p className={sectionLabel}>This year</p>
         <div className="flex gap-3 items-center">
           <div className="w-20 h-20 shrink-0 rounded-xl bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-2 overflow-hidden">
-            <img src={chosen.image} alt={chosen.name} className="w-full h-full object-contain" />
+            <img src={selectedRecipient === "mum" ? (chosen.original_image || chosen.image) : (chosen.processed_product_photo || chosen.image)} alt={chosen.name} className={`w-full h-full object-contain ${selectedRecipient === "mum" ? "rounded-xl" : ""}`} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">{chosen.name}</p>
@@ -295,7 +302,7 @@ function ReviewStep({
                 className="absolute top-0 w-[52px] h-[52px] rounded-xl bg-card ring-2 ring-[var(--border-default)] flex items-center justify-center p-1.5"
                 style={{ left: `${i * 20}px`, zIndex: 3 - i }}
               >
-                <img src={g.processed_product_photo || g.image} alt="" className="w-full h-full object-contain" />
+                <img src={selectedRecipient === "mum" ? (g.original_image || g.image) : (g.processed_product_photo || g.image)} alt="" className={`w-full h-full object-contain ${selectedRecipient === "mum" ? "rounded-xl" : ""}`} />
               </div>
             ))}
           </div>
@@ -338,7 +345,7 @@ function ReviewStep({
           <p className="text-center text-xs text-red-400 mt-2">{checkoutError}</p>
         )}
         <p className="text-center text-[0.7rem] text-foreground/25 mt-3">
-          Secure Stripe checkout · £4.99/yr subscription + gift at dispatch
+          Secure Stripe checkout
         </p>
       </motion.div>
     </motion.div>
@@ -354,8 +361,7 @@ export default function GiftQuiz() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [quizProducts, setQuizProducts] = useState<Array<{ name: string; price: string; priceNumeric?: number; id?: string; productUrl?: string; tag: string; image: string; original_image?: string; processed_product_photo?: string; desc: string }>>(FALLBACK_GIFTS);
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [quizProducts, setQuizProducts] = useState<Array<{ name: string; price: string; priceNumeric?: number; id?: string; productUrl?: string; tag: string; image: string; original_image?: string; product_photo?: string; processed_product_photo?: string; desc: string }>>(FALLBACK_GIFTS);
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
   const [deliveryOption, setDeliveryOption] = useState<"direct" | "me" | null>(null);
   const [address, setAddress] = useState<Address>({ line1: "", line2: "", city: "", postcode: "" });
@@ -419,7 +425,7 @@ export default function GiftQuiz() {
       .then((data) => {
         if (data.products?.length) {
           setQuizProducts(
-            data.products.map((p: { id: string; name: string; price: number; image: string; original_image: string; processed_product_photo: string; description: string; product_url?: string }, i: number) => ({
+            data.products.map((p: { id: string; name: string; price: number; image: string; original_image: string; product_photo: string; processed_product_photo: string; description: string; product_url?: string }, i: number) => ({
               id: p.id,
               name: p.name,
               price: formatPrice(p.price),
@@ -428,6 +434,7 @@ export default function GiftQuiz() {
               tag: GIFT_TAGS[i] ?? "Pick",
               image: p.image,
               original_image: p.original_image,
+              product_photo: p.product_photo,
               processed_product_photo: p.processed_product_photo,
               desc: p.description,
             }))
@@ -512,7 +519,6 @@ export default function GiftQuiz() {
     setSelectedDay(null);
     setApprovedGifts(new Set());
     setQuizProducts(FALLBACK_GIFTS);
-    setShowOriginal(false);
   };
 
   const recipientLabel =
@@ -627,22 +633,32 @@ export default function GiftQuiz() {
                   </p>
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                    {recipients.map((r) => (
-                      <button
-                        key={r.id}
-                        onClick={() => handleRecipientSelect(r.id)}
-                        className={`group relative flex flex-col items-center gap-1.5 py-4 px-2 rounded-xl border transition-all duration-300 cursor-pointer ${
-                          selectedRecipient === r.id
-                            ? "border-[#5170ff]/50 bg-[#5170ff]/5"
-                            : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
-                        }`}
-                      >
-                        <span className="text-2xl">{r.emoji}</span>
-                        <span className="font-medium text-xs sm:text-sm">
-                          {r.label}
-                        </span>
-                      </button>
-                    ))}
+                    {recipients.map((r) => {
+                      const available = r.id === "mum" || r.id === "dad";
+                      return available ? (
+                        <button
+                          key={r.id}
+                          onClick={() => handleRecipientSelect(r.id)}
+                          className={`group relative flex flex-col items-center gap-1.5 py-4 px-2 rounded-xl border transition-all duration-300 cursor-pointer ${
+                            selectedRecipient === r.id
+                              ? "border-[#5170ff]/50 bg-[#5170ff]/5"
+                              : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
+                          }`}
+                        >
+                          <span className="text-2xl">{r.emoji}</span>
+                          <span className="font-medium text-xs sm:text-sm">{r.label}</span>
+                        </button>
+                      ) : (
+                        <div
+                          key={r.id}
+                          className="relative flex flex-col items-center gap-1.5 py-4 px-2 rounded-xl border border-[var(--border-default)] bg-card opacity-45"
+                        >
+                          <span className="text-2xl grayscale">{r.emoji}</span>
+                          <span className="font-medium text-xs sm:text-sm text-foreground/40">{r.label}</span>
+                          <span className="absolute bottom-1.5 text-[0.55rem] font-semibold uppercase tracking-wider text-foreground/30">Soon</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}
@@ -927,14 +943,6 @@ export default function GiftQuiz() {
                       <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
                         Choose a gift for {recipientLabel}
                       </h3>
-                      {quizProducts.some((g) => g.original_image && g.original_image !== g.image) && (
-                        <button
-                          onClick={() => setShowOriginal((v) => !v)}
-                          className="shrink-0 text-[0.65rem] font-medium px-2.5 py-1 rounded-full bg-secondary ring-1 ring-[var(--border-default)] text-foreground/50 hover:text-foreground/80 transition-colors cursor-pointer"
-                        >
-                          {showOriginal ? "original" : "processed"}
-                        </button>
-                      )}
                     </div>
                     <p className="text-foreground/40 text-sm leading-relaxed">
                       {recipientLabel}'s {occasionLabel.toLowerCase()} is on{" "}
@@ -993,9 +1001,9 @@ export default function GiftQuiz() {
                             className="relative aspect-square bg-secondary flex items-center justify-center p-5 sm:p-6 cursor-pointer"
                           >
                             <img
-                              src={showOriginal ? (gift.original_image || gift.image) : gift.image}
+                              src={selectedRecipient === "mum" ? (gift.original_image || gift.image) : (gift.processed_product_photo || gift.image)}
                               alt={gift.name}
-                              className="w-full h-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-500 rounded-xl"
+                              className={`w-full h-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-500 ${selectedRecipient === "mum" ? "rounded-xl" : ""}`}
                               loading="lazy"
                             />
                           </div>
@@ -1048,6 +1056,7 @@ export default function GiftQuiz() {
                   </motion.div>
 
                   {/* ─── Product Detail Drawer ─── */}
+                  {createPortal(
                   <AnimatePresence>
                     {viewingGift !== null && (
                       <motion.div
@@ -1055,7 +1064,7 @@ export default function GiftQuiz() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+                        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
                         onClick={() => setViewingGift(null)}
                       >
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
@@ -1069,7 +1078,7 @@ export default function GiftQuiz() {
                             stiffness: 300,
                           }}
                           onClick={(e) => e.stopPropagation()}
-                          className="relative w-full sm:max-w-md bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl ring-1 ring-[var(--border-default)] max-h-[85vh] overflow-y-auto"
+                          className="relative w-full sm:max-w-lg bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl ring-1 ring-[var(--border-default)] flex flex-col max-h-[90vh] sm:max-h-[80vh]"
                         >
                           {/* Close button */}
                           <button
@@ -1091,6 +1100,8 @@ export default function GiftQuiz() {
                             </svg>
                           </button>
 
+                          {/* Scrollable content */}
+                          <div className="overflow-y-auto flex-1 min-h-0">
                           {/* Product image — click for fullscreen */}
                           <div
                             onClick={() =>
@@ -1099,9 +1110,9 @@ export default function GiftQuiz() {
                             className="relative aspect-square bg-secondary rounded-t-3xl sm:rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
                           >
                             <img
-                              src={quizProducts[viewingGift].image}
+                              src={selectedRecipient === "mum" ? (quizProducts[viewingGift].original_image || quizProducts[viewingGift].image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image)}
                               alt={quizProducts[viewingGift].name}
-                              className="w-full h-full object-contain drop-shadow-xl"
+                              className={`w-full h-full object-contain drop-shadow-xl ${selectedRecipient === "mum" ? "rounded-xl" : ""}`}
                             />
                             <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
                               <svg
@@ -1121,7 +1132,7 @@ export default function GiftQuiz() {
                           </div>
 
                           {/* Product info */}
-                          <div className="p-6">
+                          <div className="p-6 pb-4">
                             <div className="flex items-start justify-between gap-3 mb-1">
                               <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#5170ff] bg-[#5170ff]/8 px-2.5 py-1 rounded-full">
                                 {quizProducts[viewingGift].tag}
@@ -1133,10 +1144,14 @@ export default function GiftQuiz() {
                             <h4 className="text-lg font-semibold tracking-tight mt-3 mb-2">
                               {quizProducts[viewingGift].name}
                             </h4>
-                            <p className="text-foreground/45 text-sm leading-relaxed mb-6">
+                            <p className="text-foreground/45 text-sm leading-relaxed">
                               {quizProducts[viewingGift].desc}
                             </p>
+                          </div>
+                          </div>
 
+                          {/* Pinned select button */}
+                          <div className="p-6 pt-3 border-t border-[var(--border-subtle)]">
                             <button
                               onClick={() => {
                                 handleApprove(viewingGift);
@@ -1156,9 +1171,12 @@ export default function GiftQuiz() {
                         </motion.div>
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                  </AnimatePresence>,
+                  document.body
+                  )}
 
                   {/* ─── Image Lightbox ─── */}
+                  {createPortal(
                   <AnimatePresence>
                     {lightboxImage && (
                       <motion.div
@@ -1166,7 +1184,7 @@ export default function GiftQuiz() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-[60] flex items-center justify-center cursor-zoom-out"
+                        className="fixed inset-0 z-[110] flex items-center justify-center cursor-zoom-out"
                         onClick={() => setLightboxImage(null)}
                       >
                         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
@@ -1202,7 +1220,9 @@ export default function GiftQuiz() {
                         </button>
                       </motion.div>
                     )}
-                  </AnimatePresence>
+                  </AnimatePresence>,
+                  document.body
+                  )}
                 </motion.div>
               )}
 
@@ -1396,6 +1416,7 @@ export default function GiftQuiz() {
                   occasionLabel={occasionLabel}
                   recipientLabel={recipientLabel}
                   gender={selectedGender}
+                  selectedRecipient={selectedRecipient}
                 />
               )}
             </AnimatePresence>

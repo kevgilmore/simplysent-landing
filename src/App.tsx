@@ -1,3 +1,4 @@
+import { DevBadge } from "@/components/DevBadge";
 import PromoBanner from "@/components/PromoBanner";
 import Hero from "@/components/Hero";
 import LogoBar from "@/components/LogoBar";
@@ -12,6 +13,7 @@ import Footer from "@/components/Footer";
 function App() {
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <DevBadge />
       <PromoBanner />
       <Hero />
       <LogoBar />

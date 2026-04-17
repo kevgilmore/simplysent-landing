@@ -8,7 +8,9 @@ export default defineConfig({
     base: "/",
     plugins: [react(), tailwindcss()],
     server: {
-        allowedHosts: ["abby-superinclusive-tyesha.ngrok-free.dev"],
+        port: 3001,
+        host: true,
+        allowedHosts: ["simplysent.ngrok-free.dev"],
     },
     resolve: {
         alias: {
