@@ -114,9 +114,18 @@ const FALLBACK_GIFTS = [
 
 const GIFT_TAGS = ["Top Pick", "Premium", "Best Value", "Trending", "Fan Favourite"];
 const PROD_API = "https://simplysent-api-973409790816.europe-west1.run.app";
-const API_BASE = (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"))
-  ? (import.meta.env.VITE_API_URL || "http://localhost:8080")
+
+function isLocalEnv(): boolean {
+  if (typeof window === "undefined") return false;
+  const h = window.location.hostname;
+  return h === "localhost" || h === "127.0.0.1" || h.endsWith(".ngrok-free.app") || h.endsWith(".ngrok-free.dev") || h.endsWith(".ngrok.io") || h.endsWith(".ngrok.app");
+}
+
+const API_BASE = isLocalEnv()
+  ? ""
   : PROD_API;
+
+const DEV_ADDRESS = { line1: "42 Baker Street", line2: "", city: "London", postcode: "W1U 7BJ" };
 
 function deriveSlug(recipient: string, occasion: string, gender: string | null): string {
   if (occasion === "mothersday") return "mum-mothers-day";
@@ -167,6 +176,11 @@ function ReviewStep({
   recipientLabel,
   gender,
   selectedRecipient,
+  address,
+  shippingName,
+  deliveryOption,
+  birthMonth,
+  birthDay,
 }: {
   approvedGifts: Set<number>;
   giftResults: {
@@ -176,6 +190,7 @@ function ReviewStep({
     id?: string;
     productUrl?: string;
     image: string;
+    original_image?: string;
     product_photo?: string;
     processed_product_photo?: string;
     tag: string;
@@ -187,6 +202,11 @@ function ReviewStep({
   recipientLabel: string;
   gender: string | null;
   selectedRecipient: string | null;
+  address: Address;
+  shippingName: string;
+  birthMonth: number | null;
+  birthDay: number | null;
+  deliveryOption: "direct" | "me" | null;
 }) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -206,9 +226,12 @@ function ReviewStep({
     setCheckoutLoading(true);
     setCheckoutError(null);
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (isLocalEnv()) headers["x-stripe-sandbox"] = "true";
+
       const res = await fetch(`${API_BASE}/create-checkout-session`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           productName: chosen.name,
           productPrice: chosen.priceNumeric ?? 0,
@@ -216,9 +239,9 @@ function ReviewStep({
           productUrl: chosen.productUrl ?? undefined,
           occasionName: occasionLabel,
           recipient: {
-            name: "",
-            relationship: recipientLabel,
-            gender: gender || "",
+            name: recipientLabel,
+            relationship: ({ dad: "Father", mum: "Mother" } as Record<string, string>)[selectedRecipient ?? ""] ?? recipientLabel,
+            gender: gender || (["dad", "brother", "son"].includes(selectedRecipient ?? "") ? "male" : ["mum", "sister", "daughter"].includes(selectedRecipient ?? "") ? "female" : ""),
             dob: "",
             interests: [],
             budgetMin: 0,
@@ -226,13 +249,17 @@ function ReviewStep({
           },
           giftCategories: [],
           productOnly: true,
-          successUrl: "https://app.simplysent.co/onboarding/confirmation",
+          deliveryOption: deliveryOption ?? "direct",
+          successUrl: window.location.origin,
+          ...(shippingName.trim() ? { shippingName: shippingName.trim() } : {}),
+          ...(address.line1 ? { shippingAddress: address } : {}),
         }),
       });
       if (!res.ok) throw new Error("Could not create checkout session");
       const data = await res.json();
       window.location.href = data.url;
-    } catch {
+    } catch (err) {
+      console.error("[checkout]", err);
       setCheckoutError("Something went wrong. Please try again.");
       setCheckoutLoading(false);
     }
@@ -257,7 +284,7 @@ function ReviewStep({
         <p className={sectionLabel}>This year</p>
         <div className="flex gap-3 items-center">
           <div className="w-20 h-20 shrink-0 rounded-xl bg-card ring-1 ring-[var(--border-default)] flex items-center justify-center p-2 overflow-hidden">
-            <img src={selectedRecipient === "mum" ? (chosen.original_image || chosen.image) : (chosen.processed_product_photo || chosen.image)} alt={chosen.name} className={`w-full h-full object-contain ${selectedRecipient === "mum" ? "rounded-xl" : ""}`} />
+            <img src={selectedRecipient === "mum" ? (chosen.product_photo || chosen.original_image) : (chosen.processed_product_photo || chosen.image)} alt={chosen.name} className="w-full h-full object-contain" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">{chosen.name}</p>
@@ -302,7 +329,7 @@ function ReviewStep({
                 className="absolute top-0 w-[52px] h-[52px] rounded-xl bg-card ring-2 ring-[var(--border-default)] flex items-center justify-center p-1.5"
                 style={{ left: `${i * 20}px`, zIndex: 3 - i }}
               >
-                <img src={selectedRecipient === "mum" ? (g.original_image || g.image) : (g.processed_product_photo || g.image)} alt="" className={`w-full h-full object-contain ${selectedRecipient === "mum" ? "rounded-xl" : ""}`} />
+                <img src={selectedRecipient === "mum" ? (g.product_photo || g.original_image) : (g.processed_product_photo || g.image)} alt="" className="w-full h-full object-contain" />
               </div>
             ))}
           </div>
@@ -362,9 +389,11 @@ export default function GiftQuiz() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [quizProducts, setQuizProducts] = useState<Array<{ name: string; price: string; priceNumeric?: number; id?: string; productUrl?: string; tag: string; image: string; original_image?: string; product_photo?: string; processed_product_photo?: string; desc: string }>>(FALLBACK_GIFTS);
+  const [productsError, setProductsError] = useState(false);
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
   const [deliveryOption, setDeliveryOption] = useState<"direct" | "me" | null>(null);
-  const [address, setAddress] = useState<Address>({ line1: "", line2: "", city: "", postcode: "" });
+  const [shippingName, setShippingName] = useState("");
+  const [address, setAddress] = useState<Address>(DEV_ADDRESS);
   const [addressQuery, setAddressQuery] = useState("");
   const [addressSuggestions, setAddressSuggestions] = useState<{ id: string; suggestion: string; udprn: number }[]>([]);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -420,8 +449,9 @@ export default function GiftQuiz() {
     const timer = setTimeout(() => setStep("results"), 2400);
 
     const slug = deriveSlug(selectedRecipient!, selectedOccasion!, selectedGender);
+    setProductsError(false);
     fetch(`${API_BASE}/curate/guide/${slug}/products`)
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((data) => {
         if (data.products?.length) {
           setQuizProducts(
@@ -439,9 +469,11 @@ export default function GiftQuiz() {
               desc: p.description,
             }))
           );
+        } else {
+          setProductsError(true);
         }
       })
-      .catch(() => { /* keep fallback */ });
+      .catch(() => setProductsError(true));
 
     return () => clearTimeout(timer);
   }, [step]);
@@ -503,10 +535,8 @@ export default function GiftQuiz() {
 
   const handleApprove = (index: number) => {
     setApprovedGifts((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
+      if (prev.has(index)) return new Set();
+      return new Set([index]);
     });
   };
 
@@ -954,6 +984,11 @@ export default function GiftQuiz() {
                   </div>
 
                   {/* Gift cards */}
+                  {productsError ? (
+                    <div className="text-center py-12 text-foreground/50 text-sm">
+                      Couldn't load gift recommendations. Please try again later.
+                    </div>
+                  ) : (
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     {quizProducts.map((gift, i) => {
                       const isApproved = approvedGifts.has(i);
@@ -998,12 +1033,12 @@ export default function GiftQuiz() {
                           {/* Image */}
                           <div
                             onClick={() => setViewingGift(i)}
-                            className="relative aspect-square bg-secondary flex items-center justify-center p-5 sm:p-6 cursor-pointer"
+                            className="relative aspect-square bg-secondary flex items-center justify-center cursor-pointer"
                           >
                             <img
-                              src={selectedRecipient === "mum" ? (gift.original_image || gift.image) : (gift.processed_product_photo || gift.image)}
+                              src={selectedRecipient === "mum" ? (gift.product_photo || gift.original_image) : (gift.processed_product_photo || gift.image)}
                               alt={gift.name}
-                              className={`w-full h-full object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-500 ${selectedRecipient === "mum" ? "rounded-xl" : ""}`}
+                              className={`group-hover:scale-105 transition-transform duration-500${selectedRecipient === "mum" ? " max-w-[calc(100%-24px)] max-h-[calc(100%-24px)] rounded-xl" : " max-w-[calc(100%-40px)] max-h-[calc(100%-40px)] sm:max-w-[calc(100%-48px)] sm:max-h-[calc(100%-48px)]"}`}
                               loading="lazy"
                             />
                           </div>
@@ -1019,6 +1054,7 @@ export default function GiftQuiz() {
                       );
                     })}
                   </div>
+                  )}
 
                   {/* Continue section — outside grid */}
                   <motion.div
@@ -1029,9 +1065,7 @@ export default function GiftQuiz() {
                   >
                     <div className="text-center sm:text-left">
                       <p className="text-foreground/50 text-sm">
-                        {approvedGifts.size > 0
-                          ? `${approvedGifts.size} gift${approvedGifts.size > 1 ? "s" : ""} selected`
-                          : "Tap the + to select a gift"}
+                        {approvedGifts.size > 0 ? "1 gift selected" : "Tap the + to select a gift"}
                       </p>
                     </div>
                     <button
@@ -1105,14 +1139,14 @@ export default function GiftQuiz() {
                           {/* Product image — click for fullscreen */}
                           <div
                             onClick={() =>
-                              setLightboxImage(quizProducts[viewingGift].image)
+                              setLightboxImage(selectedRecipient === "mum" ? (quizProducts[viewingGift].product_photo || quizProducts[viewingGift].original_image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image))
                             }
                             className="relative aspect-square bg-secondary rounded-t-3xl sm:rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
                           >
                             <img
-                              src={selectedRecipient === "mum" ? (quizProducts[viewingGift].original_image || quizProducts[viewingGift].image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image)}
+                              src={selectedRecipient === "mum" ? (quizProducts[viewingGift].product_photo || quizProducts[viewingGift].original_image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image)}
                               alt={quizProducts[viewingGift].name}
-                              className={`w-full h-full object-contain drop-shadow-xl ${selectedRecipient === "mum" ? "rounded-xl" : ""}`}
+                              className="w-full h-full object-contain drop-shadow-xl"
                             />
                             <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
                               <svg
@@ -1335,6 +1369,19 @@ export default function GiftQuiz() {
                     Start typing to find the address
                   </p>
 
+                  {/* Recipient name — direct delivery only */}
+                  {deliveryOption === "direct" && (
+                    <div className="mb-4">
+                      <input
+                        type="text"
+                        value={shippingName}
+                        onChange={(e) => setShippingName(e.target.value)}
+                        placeholder="Recipient's full name"
+                        className="w-full px-4 py-3 rounded-xl border border-[var(--border-default)] bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-[#5170ff]/30 focus:border-[#5170ff]/50 transition-all placeholder:text-foreground/25"
+                      />
+                    </div>
+                  )}
+
                   {/* Address search */}
                   <div className="relative mb-4">
                     <input
@@ -1388,19 +1435,16 @@ export default function GiftQuiz() {
                   <div className="mt-6 flex items-center justify-center gap-4">
                     <button
                       onClick={() => setStep("plan")}
-                      disabled={!address.line1 || !address.city || !address.postcode}
+                      disabled={
+                        !address.line1 || !address.city || !address.postcode ||
+                        (deliveryOption === "direct" && !shippingName.trim())
+                      }
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                     >
                       Continue
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14M12 5l7 7-7 7" />
                       </svg>
-                    </button>
-                    <button
-                      onClick={() => setStep("plan")}
-                      className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors cursor-pointer"
-                    >
-                      Skip
                     </button>
                   </div>
                 </motion.div>
@@ -1417,6 +1461,11 @@ export default function GiftQuiz() {
                   recipientLabel={recipientLabel}
                   gender={selectedGender}
                   selectedRecipient={selectedRecipient}
+                  address={address}
+                  shippingName={shippingName}
+                  deliveryOption={deliveryOption}
+                  birthMonth={selectedMonth}
+                  birthDay={selectedDay}
                 />
               )}
             </AnimatePresence>

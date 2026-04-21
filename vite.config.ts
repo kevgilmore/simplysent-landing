@@ -11,6 +11,10 @@ export default defineConfig({
         port: 3001,
         host: true,
         allowedHosts: ["simplysent.ngrok-free.dev"],
+        proxy: {
+            "/curate": "http://localhost:8080",
+            "/create-checkout-session": "http://localhost:8080",
+        },
     },
     resolve: {
         alias: {

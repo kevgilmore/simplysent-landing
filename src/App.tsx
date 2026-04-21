@@ -9,8 +9,18 @@ import AppPreview from "@/components/AppPreview";
 import FAQ from "@/components/FAQ";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
+import OrderConfirmation from "@/components/OrderConfirmation";
+
+const APP_URL = import.meta.env.VITE_APP_URL || "https://app.simplysent.co";
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const isConfirmation = Boolean(params.get("session_id"));
+
+  if (isConfirmation) {
+    return <OrderConfirmation appUrl={APP_URL} />;
+  }
+
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <DevBadge />
