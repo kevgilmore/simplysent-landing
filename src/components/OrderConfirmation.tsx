@@ -1,8 +1,16 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/ThemeContext";
 
+const API_BASE = (() => {
+  const h = window.location.hostname;
+  const isLocal = h === "localhost" || h === "127.0.0.1" || h.endsWith(".ngrok-free.app") || h.endsWith(".ngrok.io") || h.endsWith(".ngrok.app");
+  return isLocal ? "" : "https://api.simplysent.co";
+})();
+
 interface Props {
   appUrl: string;
+  sessionId: string;
 }
 
 const fade = (delay: number) => ({
@@ -11,8 +19,25 @@ const fade = (delay: number) => ({
   transition: { delay, duration: 0.65, ease: [0.22, 1, 0.36, 1] },
 });
 
-export default function OrderConfirmation({ appUrl }: Props) {
+export default function OrderConfirmation({ appUrl, sessionId }: Props) {
   const { theme, toggle } = useTheme();
+  const [loading, setLoading] = useState(false);
+
+  async function handleContinue(e: React.MouseEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/user/handover-token?session_id=${encodeURIComponent(sessionId)}`);
+      if (res.ok) {
+        const { token } = await res.json();
+        window.location.href = `${appUrl}?handover_token=${encodeURIComponent(token)}`;
+        return;
+      }
+    } catch {
+      // fall through to plain redirect
+    }
+    window.location.href = appUrl;
+  }
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col overflow-hidden grain bg-background text-foreground">
@@ -102,17 +127,20 @@ export default function OrderConfirmation({ appUrl }: Props) {
 
         {/* CTA */}
         <motion.div {...fade(0.55)} className="flex flex-col items-center gap-4">
-          <a
-            href={appUrl}
-            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          <button
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm cta-gradient text-white shadow-lg shadow-[#5170ff]/25 hover:shadow-[#5170ff]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:scale-100"
+            disabled={loading}
+            onClick={handleContinue}
           >
-            Continue to app
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
+            {loading ? "Loading…" : "Continue to app"}
+            {!loading && (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            )}
+          </button>
           <p className="text-xs text-foreground/30">
-            Sign in to track your order and manage future gifts.
+            You'll be signed in automatically.
           </p>
         </motion.div>
       </div>

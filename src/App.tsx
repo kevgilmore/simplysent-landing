@@ -18,7 +18,7 @@ function App() {
   const isConfirmation = Boolean(params.get("session_id"));
 
   if (isConfirmation) {
-    return <OrderConfirmation appUrl={APP_URL} />;
+    return <OrderConfirmation appUrl={APP_URL} sessionId={params.get("session_id")!} />;
   }
 
   return (
