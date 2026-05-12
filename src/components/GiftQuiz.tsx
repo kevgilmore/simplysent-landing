@@ -126,6 +126,11 @@ const API_BASE = isLocalEnv()
   : PROD_API;
 
 const DEV_ADDRESS = { line1: "42 Baker Street", line2: "", city: "London", postcode: "W1U 7BJ" };
+const DEV_ADDRESS_SUGGESTION = {
+  id: "dev-mock",
+  suggestion: "42 Baker Street, London, W1U 7BJ",
+  udprn: 0,
+};
 
 function deriveSlug(recipient: string, occasion: string, gender: string | null): string {
   if (occasion === "mothersday") return "mum-mothers-day";
@@ -179,8 +184,6 @@ function ReviewStep({
   address,
   shippingName,
   deliveryOption,
-  birthMonth,
-  birthDay,
 }: {
   approvedGifts: Set<number>;
   giftResults: {
@@ -204,8 +207,6 @@ function ReviewStep({
   selectedRecipient: string | null;
   address: Address;
   shippingName: string;
-  birthMonth: number | null;
-  birthDay: number | null;
   deliveryOption: "direct" | "me" | null;
 }) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -393,7 +394,7 @@ export default function GiftQuiz() {
   const [approvedGifts, setApprovedGifts] = useState<Set<number>>(new Set());
   const [deliveryOption, setDeliveryOption] = useState<"direct" | "me" | null>(null);
   const [shippingName, setShippingName] = useState("");
-  const [address, setAddress] = useState<Address>(DEV_ADDRESS);
+  const [address, setAddress] = useState<Address>({ line1: "", line2: "", city: "", postcode: "" });
   const [addressQuery, setAddressQuery] = useState("");
   const [addressSuggestions, setAddressSuggestions] = useState<{ id: string; suggestion: string; udprn: number }[]>([]);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -487,6 +488,10 @@ export default function GiftQuiz() {
       setAddressSuggestions([]);
       return;
     }
+    if (isLocalEnv()) {
+      setAddressSuggestions([DEV_ADDRESS_SUGGESTION]);
+      return;
+    }
     addressDebounceRef.current = setTimeout(async () => {
       setAddressLoading(true);
       try {
@@ -512,6 +517,11 @@ export default function GiftQuiz() {
 
   const handleAddressSelect = async (udprn: number) => {
     setAddressSuggestions([]);
+    if (isLocalEnv()) {
+      setAddress(DEV_ADDRESS);
+      setAddressQuery(DEV_ADDRESS_SUGGESTION.suggestion);
+      return;
+    }
     try {
       const res = await fetch(
         `https://api.ideal-postcodes.co.uk/v1/udprn/${udprn}?api_key=ak_mndm4cre3G3LcdbX26l53zyr585Va`
@@ -664,7 +674,7 @@ export default function GiftQuiz() {
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                     {recipients.map((r) => {
-                      const available = r.id === "mum" || r.id === "dad";
+                      const available = r.id === "dad";
                       return available ? (
                         <button
                           key={r.id}
@@ -758,20 +768,32 @@ export default function GiftQuiz() {
                           return o.id !== "mothersday";
                         return o.id !== "mothersday" && o.id !== "fathersday";
                       })
-                      .map((o) => (
-                        <button
-                          key={o.id}
-                          onClick={() => handleOccasionSelect(o.id)}
-                          className={`group relative flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                            selectedOccasion === o.id
-                              ? "border-[#5170ff]/50 cta-gradient/10"
-                              : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
-                          }`}
-                        >
-                          <span className="text-3xl">{o.emoji}</span>
-                          <span className="font-medium text-sm">{o.label}</span>
-                        </button>
-                      ))}
+                      .map((o) => {
+                        const available = o.id === "fathersday";
+                        return available ? (
+                          <button
+                            key={o.id}
+                            onClick={() => handleOccasionSelect(o.id)}
+                            className={`group relative flex flex-col items-center gap-3 p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                              selectedOccasion === o.id
+                                ? "border-[#5170ff]/50 cta-gradient/10"
+                                : "border-[var(--border-default)] bg-card hover:border-[#5170ff]/30 hover:bg-secondary"
+                            }`}
+                          >
+                            <span className="text-3xl">{o.emoji}</span>
+                            <span className="font-medium text-sm">{o.label}</span>
+                          </button>
+                        ) : (
+                          <div
+                            key={o.id}
+                            className="relative flex flex-col items-center gap-3 p-6 rounded-2xl border border-[var(--border-default)] bg-card opacity-45"
+                          >
+                            <span className="text-3xl grayscale">{o.emoji}</span>
+                            <span className="font-medium text-sm text-foreground/40">{o.label}</span>
+                            <span className="absolute bottom-1.5 text-[0.55rem] font-semibold uppercase tracking-wider text-foreground/30">Soon</span>
+                          </div>
+                        );
+                      })}
                   </div>
                 </motion.div>
               )}
@@ -1139,7 +1161,7 @@ export default function GiftQuiz() {
                           {/* Product image — click for fullscreen */}
                           <div
                             onClick={() =>
-                              setLightboxImage(selectedRecipient === "mum" ? (quizProducts[viewingGift].product_photo || quizProducts[viewingGift].original_image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image))
+                              setLightboxImage((selectedRecipient === "mum" ? (quizProducts[viewingGift].product_photo || quizProducts[viewingGift].original_image) : (quizProducts[viewingGift].processed_product_photo || quizProducts[viewingGift].image)) ?? null)
                             }
                             className="relative aspect-square bg-secondary rounded-t-3xl sm:rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
                           >
@@ -1464,8 +1486,6 @@ export default function GiftQuiz() {
                   address={address}
                   shippingName={shippingName}
                   deliveryOption={deliveryOption}
-                  birthMonth={selectedMonth}
-                  birthDay={selectedDay}
                 />
               )}
             </AnimatePresence>

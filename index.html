@@ -22,6 +22,16 @@
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SimplySent | The Gifting App</title>
+        <script>
+            (function () {
+                try {
+                    var t = localStorage.getItem("ss-theme-v2") || "dark";
+                    document.documentElement.classList.add(t);
+                } catch (e) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
     </head>
     <body>
         <div id="root"></div>
