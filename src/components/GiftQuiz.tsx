@@ -336,7 +336,7 @@ function ReviewStep({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-foreground/80">Fresh picks, every year</p>
-            <p className="text-xs text-foreground/45 mt-1 leading-relaxed">We suggest a new gift. You approve with one tap.</p>
+            <p className="text-xs text-foreground/45 mt-1 leading-relaxed">We suggest a new gift. Setup one tap approval for an easier experience.</p>
             <a href="#app-preview" className="text-xs text-[#5170ff] hover:underline mt-1.5 inline-block">See how it works →</a>
           </div>
         </div>
