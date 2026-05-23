@@ -17,7 +17,13 @@ interface Product {
   desc: string;
 }
 
-const GIFT_TAGS = ["Top Pick", "Premium", "Best Value", "Trending", "Fan Favourite"];
+const GIFT_TAGS = [
+  "Top Pick",
+  "Premium",
+  "Best Value",
+  "Trending",
+  "Fan Favourite",
+];
 const PROD_API = "https://simplysent-api-973409790816.europe-west1.run.app";
 const SLUG = "dad-fathers-day";
 const REQUEST_TIMEOUT_MS = 45_000;
@@ -149,7 +155,8 @@ export default function GiftQuiz() {
             Find Dad a gift in seconds
           </h2>
           <p className="text-foreground/50 text-lg max-w-lg mx-auto">
-            See the kind of picks SimplySent surfaces for Dad — no quiz, no fuss.
+            See the kind of picks SimplySent surfaces for Dad — no quiz, no
+            fuss.
           </p>
         </motion.div>
 
@@ -175,7 +182,11 @@ export default function GiftQuiz() {
                   <motion.div
                     initial={{ scale: 0.85, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{
+                      delay: 0.1,
+                      duration: 0.6,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="relative mb-8"
                   >
                     <div className="absolute inset-0 rounded-[2rem] cta-gradient blur-3xl opacity-40" />
@@ -185,11 +196,11 @@ export default function GiftQuiz() {
                   </motion.div>
 
                   <p className="text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-foreground/40 mb-4">
-                    Father's Day · Sun 15 Jun
+                    Father's Day · Sun 15 Jun 2026
                   </p>
 
                   <h3 className="text-3xl md:text-4xl font-semibold tracking-tight mb-10">
-                    Curated picks for{" "}
+                    See what we'd pick for{" "}
                     <span className="logo-gradient">Dad</span>
                   </h3>
 
@@ -307,7 +318,8 @@ export default function GiftQuiz() {
                     Couldn't load gifts right now
                   </h3>
                   <p className="text-foreground/45 max-w-sm mb-7 leading-relaxed">
-                    Something went wrong fetching picks for Dad. Give it another try in a moment.
+                    Something went wrong fetching picks for Dad. Give it another
+                    try in a moment.
                   </p>
 
                   <button
@@ -347,7 +359,8 @@ export default function GiftQuiz() {
                         Top picks for Dad
                       </h3>
                       <p className="text-foreground/40 text-sm leading-relaxed">
-                        Tap a gift for details. Add Dad's interests, age and budget in the app to refine these.
+                        Tap a gift for details. Add Dad's interests, age and
+                        budget in the app to refine these.
                       </p>
                     </div>
                     <button
@@ -425,69 +438,69 @@ export default function GiftQuiz() {
               onClick={(e) => e.stopPropagation()}
               className="relative w-full sm:max-w-lg bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl ring-1 ring-[var(--border-default)] flex flex-col max-h-[90vh] sm:max-h-[80vh]"
             >
-                <button
-                  onClick={() => setViewingGift(null)}
-                  className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-foreground/10 transition-colors cursor-pointer"
+              <button
+                onClick={() => setViewingGift(null)}
+                className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-foreground/10 transition-colors cursor-pointer"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-foreground/50"
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-foreground/50"
-                  >
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
 
-                <div className="overflow-y-auto flex-1 min-h-0">
-                  <div
-                    onClick={() => viewingImage && setLightboxImage(viewingImage)}
-                    className="relative aspect-square bg-secondary rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
-                  >
-                    <img
-                      src={viewingImage ?? ""}
-                      alt={viewing.name}
-                      className="w-full h-full object-contain drop-shadow-xl"
-                    />
-                    <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                      </svg>
-                      Expand
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-3 mb-1">
-                      <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#5170ff] bg-[#5170ff]/8 px-2.5 py-1 rounded-full">
-                        {viewing.tag}
-                      </span>
-                      <span className="text-xl font-bold tracking-tight">
-                        {viewing.price}
-                      </span>
-                    </div>
-                    <h4 className="text-lg font-semibold tracking-tight mt-3 mb-2">
-                      {viewing.name}
-                    </h4>
-                    <p className="text-foreground/45 text-sm leading-relaxed">
-                      {viewing.desc}
-                    </p>
+              <div className="overflow-y-auto flex-1 min-h-0">
+                <div
+                  onClick={() => viewingImage && setLightboxImage(viewingImage)}
+                  className="relative aspect-square bg-secondary rounded-t-3xl flex items-center justify-center p-10 cursor-zoom-in"
+                >
+                  <img
+                    src={viewingImage ?? ""}
+                    alt={viewing.name}
+                    className="w-full h-full object-contain drop-shadow-xl"
+                  />
+                  <div className="absolute bottom-3 right-3 bg-card/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1.5 text-foreground/40 text-xs ring-1 ring-[var(--border-default)]">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                    Expand
                   </div>
                 </div>
+
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-3 mb-1">
+                    <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-[#5170ff] bg-[#5170ff]/8 px-2.5 py-1 rounded-full">
+                      {viewing.tag}
+                    </span>
+                    <span className="text-xl font-bold tracking-tight">
+                      {viewing.price}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-semibold tracking-tight mt-3 mb-2">
+                    {viewing.name}
+                  </h4>
+                  <p className="text-foreground/45 text-sm leading-relaxed">
+                    {viewing.desc}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         ),
@@ -513,22 +526,22 @@ export default function GiftQuiz() {
               alt=""
               className="relative max-w-[90vw] max-h-[90vh] object-contain drop-shadow-2xl"
             />
-              <button
-                onClick={() => setLightboxImage(null)}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
             </button>
           </motion.div>
         ),

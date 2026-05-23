@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/ThemeContext";
 
 const fade = (delay: number) => ({
@@ -7,8 +8,23 @@ const fade = (delay: number) => ({
   transition: { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] },
 });
 
+const HERO_IMAGES = [
+  { src: "/img/mum_cooking.jpg", alt: "A thoughtful gift for the mum who does it all", occasion: "Mother's Day" },
+  { src: "/img/fday1.jpg", alt: "A thoughtful gift for the dad who has everything", occasion: "Father's Day" },
+  { src: "/img/fday2.jpg", alt: "Celebrating the people who matter", occasion: "Father's Day" },
+  { src: "/img/fday3.jpg", alt: "Never miss a moment that counts", occasion: "Father's Day" },
+];
+
 export default function Hero() {
   const { theme, toggle } = useTheme();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((i) => (i + 1) % HERO_IMAGES.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col overflow-hidden grain">
@@ -111,14 +127,21 @@ export default function Hero() {
                 transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
                 className="relative w-full max-w-[26rem] lg:max-w-[30rem]"
               >
-                {/* Main image */}
-                <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-black/8 ring-1 ring-black/[0.04]">
-                  <img
-                    src="/img/mum_cooking.jpg"
-                    alt="The kind of person you never want to forget"
-                    className="w-full h-auto object-cover aspect-[3/4]"
-                    loading="eager"
-                  />
+                {/* Main image — auto cross-fade carousel */}
+                <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-black/8 ring-1 ring-black/[0.04] aspect-[3/4]">
+                  <AnimatePresence>
+                    <motion.img
+                      key={current}
+                      src={HERO_IMAGES[current].src}
+                      alt={HERO_IMAGES[current].alt}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1.2, ease: "easeInOut" }}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="eager"
+                    />
+                  </AnimatePresence>
                   {/* Gradient overlay at bottom */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                 </div>
@@ -138,7 +161,7 @@ export default function Hero() {
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-foreground">Mum's birthday — sorted</p>
+                        <p className="text-sm font-semibold text-foreground">{HERO_IMAGES[current].occasion} — sorted</p>
                         <p className="text-xs text-foreground/40">Picked, wrapped, delivering on time</p>
                       </div>
                     </div>
