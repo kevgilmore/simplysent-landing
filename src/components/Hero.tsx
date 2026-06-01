@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/ThemeContext";
+import { appUrl } from "@/lib/attribution";
+import { isFreeSocksEligible } from "@/lib/promo";
 
 const fade = (delay: number) => ({
   initial: { opacity: 0, y: 20 },
@@ -18,12 +20,20 @@ const HERO_IMAGES = [
 export default function Hero() {
   const { theme, toggle } = useTheme();
   const [current, setCurrent] = useState(0);
+  // Show the "Claim free socks" CTA only for visitors who arrived with the
+  // promo code (checked via hash, so the code isn't shipped in plaintext).
+  // Defaults to the standard "Find a Gift" CTA until/unless eligibility resolves.
+  const [freeSocks, setFreeSocks] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((i) => (i + 1) % HERO_IMAGES.length);
     }, 4000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    isFreeSocksEligible().then(setFreeSocks);
   }, []);
 
   return (
@@ -63,7 +73,7 @@ export default function Hero() {
             )}
           </button>
           <a
-            href="https://app.simplysent.co/login"
+            href={appUrl("/login")}
             className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors"
           >
             Sign in
@@ -87,11 +97,9 @@ export default function Hero() {
                 {...fade(0.2)}
                 className="text-[2.75rem] sm:text-[3.5rem] md:text-[4.25rem] lg:text-[4.75rem] font-bold leading-[1.02] tracking-[-0.03em] text-foreground mb-7"
               >
-                Set it up once.
+                Find the perfect gift
                 <br />
-                <span className="logo-gradient">Never think about</span>
-                <br />
-                gifting again.
+                in <span className="logo-gradient">60 seconds</span>.
               </motion.h1>
 
               <motion.p
@@ -104,13 +112,19 @@ export default function Hero() {
 
               <motion.div {...fade(0.45)} className="flex flex-wrap gap-3">
                 <a
-                  href="#app-preview"
+                  href={appUrl("/")}
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] cta-gradient text-white shadow-xl shadow-[#5170ff]/15 hover:shadow-[#5170ff]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                 >
-                  See how it works
+                  {freeSocks ? "Claim free socks" : "Find a Gift"}
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
+                </a>
+                <a
+                  href="#gift-quiz"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] text-foreground bg-foreground/5 hover:bg-foreground/10 ring-1 ring-[var(--border-default)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                >
+                  See how it works
                 </a>
               </motion.div>
             </div>

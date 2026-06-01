@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { captureAttribution } from "@/lib/attribution";
 import { DevBadge } from "@/components/DevBadge";
 import PromoBanner from "@/components/PromoBanner";
 import Hero from "@/components/Hero";
@@ -11,6 +13,13 @@ import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 
 function App() {
+  // Capture marketing params (utm_*, code, click ids) into a 30-day cookie so
+  // every app.simplysent.co link can forward them. Last-touch: overwrites on
+  // each visit that arrives with tracking params.
+  useEffect(() => {
+    captureAttribution();
+  }, []);
+
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <DevBadge />

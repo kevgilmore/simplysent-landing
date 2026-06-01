@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { appUrl } from "@/lib/attribution";
 
 export default function FinalCTA() {
     const ref = useRef(null);
@@ -47,10 +48,10 @@ export default function FinalCTA() {
                     </p>
 
                     <a
-                        href="#gift-quiz"
+                        href={appUrl("/")}
                         className="group inline-flex items-center gap-3 px-10 py-5 rounded-full font-semibold text-lg cta-gradient text-white shadow-xl shadow-[#5170ff]/15 hover:shadow-[#5170ff]/30 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300"
                     >
-                        Get started
+                        Find a Gift
                         <svg
                             width="20"
                             height="20"
@@ -67,7 +68,7 @@ export default function FinalCTA() {
                     </a>
 
                     <p className="text-sm text-foreground/25 mt-6">
-                        Cancel anytime
+                        No account needed
                     </p>
                 </motion.div>
             </div>
