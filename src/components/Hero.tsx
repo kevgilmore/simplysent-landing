@@ -111,15 +111,33 @@ export default function Hero() {
               </motion.p>
 
               <motion.div {...fade(0.45)} className="flex flex-wrap gap-3">
-                <a
-                  href={appUrl("/")}
-                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] cta-gradient text-white shadow-xl shadow-[#5170ff]/15 hover:shadow-[#5170ff]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
-                >
-                  {freeSocks ? "Claim free socks" : "Find a Gift"}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </a>
+                <div className="relative">
+                  <a
+                    href={appUrl("/")}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] cta-gradient text-white shadow-xl shadow-[#5170ff]/15 hover:shadow-[#5170ff]/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                  >
+                    {freeSocks ? "Claim free socks" : "Find a Gift"}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                  {freeSocks && (
+                    <motion.span
+                      aria-hidden
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1, y: [0, -4, 0], rotate: [12, 6, 12] }}
+                      transition={{
+                        opacity: { duration: 0.3 },
+                        scale: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+                        y: { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
+                        rotate: { repeat: Infinity, duration: 2.2, ease: "easeInOut" },
+                      }}
+                      className="pointer-events-none absolute -top-4 -right-2 text-3xl select-none drop-shadow-md"
+                    >
+                      🧦
+                    </motion.span>
+                  )}
+                </div>
                 <a
                   href="#gift-quiz"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.95rem] text-foreground bg-foreground/5 hover:bg-foreground/10 ring-1 ring-[var(--border-default)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
