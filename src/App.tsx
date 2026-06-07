@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { captureAttribution } from "@/lib/attribution";
+import { trackLanding } from "@/lib/tracking";
 import { DevBadge } from "@/components/DevBadge";
 import PromoBanner from "@/components/PromoBanner";
 import Hero from "@/components/Hero";
@@ -17,7 +18,9 @@ function App() {
   // every app.simplysent.co link can forward them. Last-touch: overwrites on
   // each visit that arrives with tracking params.
   useEffect(() => {
+    // Capture attribution first so trackLanding() reads the fresh UTM.
     captureAttribution();
+    trackLanding();
   }, []);
 
   return (
